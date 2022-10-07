@@ -1,33 +1,110 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Reflection;
+using System.Text.Json;
 using Uno.Foundation;
 
 namespace Trungnt2910.Browser;
 
-public class JsObject : IDisposable, IConvertible
+public class JsObject : IConvertible
 {
     private const string _jsType = "Trungnt2910.Browser.JsObject";
-    private string _jsThis => $"{_jsType}.ReferencedObjects[{_handle}]";
+    private static readonly Dictionary<int, WeakReference<JsObject>> _objectCache = new();
 
-    private readonly int _handle;
+    protected readonly int _handle;
+    protected string? _type;
+    internal readonly string _jsThis;
 
-    internal JsObject(int handle)
+    protected JsObject(int handle)
     {
         _handle = handle;
+        _jsThis = $"{_jsType}.ReferencedObjects[{_handle}]";
     }
 
-    public static JsObject ConstructObject(string jsExpression)
+    public static JsObject? FromExpression(string jsExpression)
     {
-        return new JsObject(int.Parse(WebAssemblyRuntime.InvokeJS($"{_jsType}.ConstructObject({jsExpression})")));
+        var objectHandleString = WebAssemblyRuntime.InvokeJS($"{_jsType}.ConstructObject({jsExpression})");
+        if (objectHandleString == null)
+        {
+            return null;
+        }
+        return FromHandle(int.Parse(objectHandleString));
     }
 
-    public JsObject this[string index]
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public static JsObject FromHandle(int objectHandle)
     {
-        get => ConstructObject($"{_jsThis}[\"{WebAssemblyRuntime.EscapeJs(index)}\"]");
+        JsObject? obj;
+        if (_objectCache.ContainsKey(objectHandle))
+        {
+            if (_objectCache[objectHandle].TryGetTarget(out obj))
+            {
+                return obj;
+            }
+            obj = new JsObject(objectHandle);
+            _objectCache[objectHandle].SetTarget(obj);
+        }
+        obj = new JsObject(objectHandle);
+        _objectCache.Add(objectHandle, new WeakReference<JsObject>(obj));
+        return obj;
+    }
+
+    internal static string ToJsObjectString(object? obj)
+    {
+        switch (obj)
+        {
+            case null:
+                return "null";
+            case string:
+            case char:
+                return $"\"{WebAssemblyRuntime.EscapeJs(obj.ToString()!)}\"";
+            case sbyte:
+            case byte:
+            case short:
+            case ushort:
+            case int:
+            case uint:
+            case long:
+            case ulong:
+            case float:
+            case double:
+            case decimal:
+                return obj.ToString()!;
+            case JsObject jsObj:
+                return jsObj._jsThis;
+            default:
+                return JsonSerializer.Serialize(obj);
+        }
+    }
+
+    public JsObject? this[string index]
+    {
+        get => FromExpression($"{_jsThis}[\"{WebAssemblyRuntime.EscapeJs(index)}\"]");
+        set => WebAssemblyRuntime.InvokeJS($"{_jsThis}[\"{WebAssemblyRuntime.EscapeJs(index)}\"] = {value?._jsThis ?? "null"}");
+    }
+
+    public JsObject? Invoke(params object?[]? args)
+    {
+        var argsStringList = args?.Select(a => ToJsObjectString(a));
+        return FromExpression($"{_jsThis}({string.Join(",", argsStringList ?? Array.Empty<string>())})");
+    }
+
+    public JsObject? InvokeMember(string index, params object?[]? args)
+    {
+        var argsStringList = args?.Select(a => ToJsObjectString(a));
+        return FromExpression($"{_jsThis}[\"{WebAssemblyRuntime.EscapeJs(index)}\"]({string.Join(",", argsStringList ?? Array.Empty<string>())})");
+    }
+
+    public void SetValue(string index, object value)
+    {
+        WebAssemblyRuntime.InvokeJS($"{_jsThis}[\"{WebAssemblyRuntime.EscapeJs(index)}\"] = {ToJsObjectString(value)}");
     }
 
     public string GetJsType()
     {
-        return WebAssemblyRuntime.InvokeJS($"typeof {_jsThis}");
+        return _type ??= WebAssemblyRuntime.InvokeJS($"typeof {_jsThis}");
     }
 
     public override string ToString()
@@ -37,6 +114,17 @@ public class JsObject : IDisposable, IConvertible
             return WebAssemblyRuntime.InvokeJS(_jsThis);
         }
         return WebAssemblyRuntime.InvokeJS($"JSON.stringify({_jsThis})");
+    }
+
+    private string ToStringRaw()
+    {
+        return WebAssemblyRuntime.InvokeJS(_jsThis);
+    }
+
+    public T Cast<T>() where T: JsObject
+    {
+        var fromHandle = typeof(T).GetMethod(nameof(FromHandle), BindingFlags.Static | BindingFlags.Public);
+        return (T)fromHandle!.Invoke(null, new object[] { _handle })!;
     }
 
     #region IConvertible
@@ -55,111 +143,188 @@ public class JsObject : IDisposable, IConvertible
         }
     }
 
-    public bool ToBoolean(IFormatProvider provider)
+    public bool ToBoolean(IFormatProvider? provider)
     {
         return bool.Parse(WebAssemblyRuntime.InvokeJS($"({_jsThis}) ? true : false"));
     }
 
-    public byte ToByte(IFormatProvider provider)
+    public byte ToByte(IFormatProvider? provider)
     {
-        return byte.Parse(WebAssemblyRuntime.InvokeJS($"{_jsThis}"), provider);
-    }
-
-    public char ToChar(IFormatProvider provider)
-    {
-        throw new NotImplementedException();
-    }
-
-    public DateTime ToDateTime(IFormatProvider provider)
-    {
-        throw new NotImplementedException();
-    }
-
-    public decimal ToDecimal(IFormatProvider provider)
-    {
-        throw new NotImplementedException();
-    }
-
-    public double ToDouble(IFormatProvider provider)
-    {
-        return double.Parse(WebAssemblyRuntime.InvokeJS($"{_jsThis}"), provider);
-    }
-
-    public short ToInt16(IFormatProvider provider)
-    {
-        throw new NotImplementedException();
-    }
-
-    public int ToInt32(IFormatProvider provider)
-    {
-        throw new NotImplementedException();
-    }
-
-    public long ToInt64(IFormatProvider provider)
-    {
-        throw new NotImplementedException();
-    }
-
-    public sbyte ToSByte(IFormatProvider provider)
-    {
-        throw new NotImplementedException();
-    }
-
-    public float ToSingle(IFormatProvider provider)
-    {
-        throw new NotImplementedException();
-    }
-
-    public string ToString(IFormatProvider provider)
-    {
-        throw new NotImplementedException();
-    }
-
-    public object ToType(Type conversionType, IFormatProvider provider)
-    {
-        throw new NotImplementedException();
-    }
-
-    public ushort ToUInt16(IFormatProvider provider)
-    {
-        throw new NotImplementedException();
-    }
-
-    public uint ToUInt32(IFormatProvider provider)
-    {
-        throw new NotImplementedException();
-    }
-
-    public ulong ToUInt64(IFormatProvider provider)
-    {
-        throw new NotImplementedException();
-    }
-    #endregion
-
-    #region IDisposable
-    private bool _disposedValue;
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!_disposedValue)
+        switch (GetJsType())
         {
-            WebAssemblyRuntime.InvokeJS($"{_jsType}.DisposeObject({_handle})");
-            _disposedValue = true;
+            case "string":
+            case "number":
+                return byte.Parse(ToStringRaw(), provider);
+            default:
+                throw new NotSupportedException();
         }
     }
 
-    // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
-    ~JsObject()
+    public char ToChar(IFormatProvider? provider)
     {
-        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-        Dispose(disposing: false);
+        switch (GetJsType())
+        {
+            case "string":
+                return ToStringRaw()[0];
+            case "number":
+                return (char)int.Parse(ToStringRaw(), provider);
+            default:
+                throw new NotSupportedException();
+        }
     }
 
-    public void Dispose()
+    public DateTime ToDateTime(IFormatProvider? provider)
     {
-        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-        Dispose(disposing: true);
-        GC.SuppressFinalize(this);
+        switch (GetJsType())
+        {
+            case "string":
+                return DateTime.Parse(ToStringRaw(), provider);
+            case "number":
+                return DateTimeOffset.FromUnixTimeMilliseconds(long.Parse(ToStringRaw())).DateTime;
+            default:
+                throw new NotSupportedException();
+        }
+    }
+
+    public decimal ToDecimal(IFormatProvider? provider)
+    {
+        switch (GetJsType())
+        {
+            case "string":
+            case "number":
+                return decimal.Parse(ToStringRaw(), provider);
+            default:
+                throw new NotSupportedException();
+        }
+    }
+
+    public double ToDouble(IFormatProvider? provider)
+    {
+        switch (GetJsType())
+        {
+            case "string":
+            case "number":
+                return double.Parse(ToStringRaw(), provider);
+            default:
+                throw new NotSupportedException();
+        }
+    }
+
+    public short ToInt16(IFormatProvider? provider)
+    {
+        switch (GetJsType())
+        {
+            case "string":
+            case "number":
+                return short.Parse(ToStringRaw(), provider);
+            default:
+                throw new NotSupportedException();
+        }
+    }
+
+    public int ToInt32(IFormatProvider? provider)
+    {
+        switch (GetJsType())
+        {
+            case "string":
+            case "number":
+                return int.Parse(ToStringRaw(), provider);
+            default:
+                throw new NotSupportedException();
+        }
+    }
+
+    public long ToInt64(IFormatProvider? provider)
+    {
+        switch (GetJsType())
+        {
+            case "string":
+            case "number":
+                return long.Parse(ToStringRaw(), provider);
+            default:
+                throw new NotSupportedException();
+        }
+    }
+
+    public sbyte ToSByte(IFormatProvider? provider)
+    {
+        switch (GetJsType())
+        {
+            case "string":
+            case "number":
+                return sbyte.Parse(ToStringRaw(), provider);
+            default:
+                throw new NotSupportedException();
+        }
+    }
+
+    public float ToSingle(IFormatProvider? provider)
+    {
+        switch (GetJsType())
+        {
+            case "string":
+            case "number":
+                return float.Parse(ToStringRaw(), provider);
+            default:
+                throw new NotSupportedException();
+        }
+    }
+
+    public string ToString(IFormatProvider? provider)
+    {
+        return ToString();
+    }
+
+    public object ToType(Type conversionType, IFormatProvider? provider)
+    {
+        throw new NotImplementedException();
+    }
+
+    public ushort ToUInt16(IFormatProvider? provider)
+    {
+        switch (GetJsType())
+        {
+            case "string":
+            case "number":
+                return ushort.Parse(ToStringRaw(), provider);
+            default:
+                throw new NotSupportedException();
+        }
+    }
+
+    public uint ToUInt32(IFormatProvider? provider)
+    {
+        switch (GetJsType())
+        {
+            case "string":
+            case "number":
+                return uint.Parse(ToStringRaw(), provider);
+            default:
+                throw new NotSupportedException();
+        }
+    }
+
+    public ulong ToUInt64(IFormatProvider? provider)
+    {
+        switch (GetJsType())
+        {
+            case "string":
+            case "number":
+                return ulong.Parse(ToStringRaw(), provider);
+            default:
+                throw new NotSupportedException();
+        }
     }
     #endregion
+
+    ~JsObject()
+    {
+        if (_objectCache.TryGetValue(_handle, out var reference) && 
+            reference.TryGetTarget(out JsObject? obj) && 
+            obj == this)
+        {
+            _objectCache.Remove(_handle);
+        }
+        WebAssemblyRuntime.InvokeJS($"{_jsType}.DisposeObject({_handle})");
+    }
 }

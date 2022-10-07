@@ -1,0 +1,10 @@
+﻿<linker>
+    <assembly fullname="Trungnt2910.Browser">
+		<type fullname="Trungnt2910.Browser.JsObject">
+			<method name="FromHandle" />
+		</type>
+		<type fullname="Trungnt2910.Browser.Dom.*">
+			<method name="FromHandle" />
+		</type>
+    </assembly>
+</linker>

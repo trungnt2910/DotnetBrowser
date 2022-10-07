@@ -1,6 +1,7 @@
 ﻿using System;
 #if BROWSER
 using Trungnt2910.Browser;
+using Trungnt2910.Browser.Dom;
 #elif WINDOWS
 using System.IO;
 #endif
@@ -8,11 +9,11 @@ using System.IO;
 Console.WriteLine("Hello World!");
 
 #if BROWSER
-using var window = JsObject.ConstructObject("window");
-using var location = window["location"];
-using var href = location["href"];
+Console.WriteLine(Window.Instance.Location.Href);
 
-Console.WriteLine(href.ToString());
+var document = JsObject.FromExpression("window.document").Cast<Document>();
+var textNode = document.InvokeMember("createTextNode", "Hello world!");
+document["body"].InvokeMember("appendChild", textNode);
 #elif WINDOWS
 Console.WriteLine(Directory.GetCurrentDirectory());
 #endif

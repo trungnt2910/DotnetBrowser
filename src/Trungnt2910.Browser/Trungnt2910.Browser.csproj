@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net$(_BrowserNetVersion)</TargetFramework>
+    <Nullable>enable</Nullable>
+    <LangVersion>preview</LangVersion>
     <!--  
       Microsoft.DotNet.SharedFramework.Sdk requires our framework assemblies to be signed 
       (to have a "public key token")
@@ -25,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <UpToDateCheckInput Remove="ts\JsObject.ts" />
+    <None Remove="LinkerDefinition.xml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -34,6 +36,16 @@
 
   <ItemGroup>
     <Folder Include="WasmScripts\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="LinkerDefinition.xml">
+      <LogicalName>$(AssemblyName).xml</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Gobie\src\Gobie\Gobie\Gobie.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
 </Project>

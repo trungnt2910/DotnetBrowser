@@ -18,6 +18,27 @@ dotnet cake build.cake --target=InstallWorkload
 ## Sample project
 The repo includes a sample project that multi-targets Windows and Browser WebAssembly.
 
+## Built-in classes
+The project aims to provide a full binding of the browser's JavaScript API in C#.
+Currently, only a small subset of this API is implemented. You can call the implemented classes in a way similar to the code in this example:
+
+```C#
+using Trungnt2910.Browser.Dom;
+
+// The global "window" object can be accessed using Window.Instance 
+Console.WriteLine(Window.Instance.Location.Href);
+
+// Alternatively, you can use `Document.FromExpression("window.document")`,
+// or directly access `Window.Instance.Document`.
+var document = JsObject.FromExpression("window.document").Cast<Document>();
+
+// `createTextNode` is not implemented yet, so you must manually call the function.
+var textNode = document.InvokeMember("createTextNode", "Hello world!");
+
+// Same for `document.body`, and `document.body.appendChild`.
+document["body"].InvokeMember("appendChild", textNode);
+```
+
 ## Why?
 This project is created mostly for multi-targeting purposes.
 Imagine the pain of building Uno Platform applications and/or libraries and then managing several different projects, from `Bruh.Skia.Gtk`, `Bruh.Skia.Wpf` to `Bruh.Wasm`.

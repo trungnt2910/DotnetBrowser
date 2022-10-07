@@ -1,0 +1,3 @@
+[submodule "src/Gobie"]
+	path = src/Gobie
+	url = https://github.com/trungnt2910/Gobie
