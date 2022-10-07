@@ -1,0 +1,7 @@
+<Project>
+  <Import Project="Sdk.targets" Sdk="Trungnt2910.Browser.Sdk" Condition="'$(TargetPlatformIdentifier)' == 'browser'" />
+
+  <ItemGroup Condition=" '$(TargetFrameworkIdentifier)' == '.NETCoreApp' and $([MSBuild]::VersionGreaterThanOrEquals($(TargetFrameworkVersion), '6.0')) ">
+    <SdkSupportedTargetPlatformIdentifier Include="browser" DisplayName="Browser" />
+  </ItemGroup>
+</Project>

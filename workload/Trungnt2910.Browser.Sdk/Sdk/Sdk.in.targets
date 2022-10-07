@@ -1,0 +1,89 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- Register net6.0-browser1.0 TFM -->
+  <ItemGroup>
+    <SupportedPlatform Include="browser" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <_DefaultTargetPlatformVersion>@BROWSERVERSION@</_DefaultTargetPlatformVersion>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <TargetPlatformSupported>true</TargetPlatformSupported>
+    <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">$(_DefaultTargetPlatformVersion)</TargetPlatformVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <SdkSupportedTargetPlatformVersion Include="@BROWSERVERSION@" />
+  </ItemGroup>
+
+  <!-- Register Browser runtime -->
+  <ItemGroup>
+    <KnownFrameworkReference
+      Include="Trungnt2910.Browser"
+      TargetFramework="net@BROWSERNETVERSION@"
+      RuntimeFrameworkName="Trungnt2910.Browser"
+      DefaultRuntimeFrameworkVersion="**FromWorkload**"
+      LatestRuntimeFrameworkVersion="**FromWorkload**"
+      TargetingPackName="Trungnt2910.Browser.Ref"
+      TargetingPackVersion="**FromWorkload**"
+      RuntimePackNamePatterns="Trungnt2910.Browser.Runtime"
+      RuntimePackRuntimeIdentifiers="win-x64;win-x86;linux-x64;linux-x86;osx-x64"
+      Profile="Browser"
+    />
+  </ItemGroup>
+
+  <!-- Reference Browser runtime -->
+  <ItemGroup Condition=" '$(DisableImplicitFrameworkReferences)' != 'true' ">
+    <FrameworkReference
+      Include="Trungnt2910.Browser"
+      IsImplicitlyDefined="true"
+      Pack="false"
+      PrivateAssets="All"
+    />
+  </ItemGroup>
+
+  <!-- Project properties -->
+  <PropertyGroup>
+    <_IsBrowserDefined>$([System.Text.RegularExpressions.Regex]::IsMatch('$(DefineConstants.Trim())', '(^|;)BROWSER($|;)'))</_IsBrowserDefined>
+    <DefineConstants Condition="!$(_IsBrowserDefined)">BROWSER;$(DefineConstants)</DefineConstants>
+    <_IsWasmDefined>$([System.Text.RegularExpressions.Regex]::IsMatch('$(DefineConstants.Trim())', '(^|;)WASM($|;)'))</_IsWasmDefined>
+    <DefineConstants Condition="!$(_IsBrowserDefined)">WASM;$(DefineConstants)</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- Must be self-contained. Framework-dependent builds cannot see our custom runtime -->
+    <SelfContained>true</SelfContained>
+    <RuntimeIdentifier Condition=" '$(RuntimeIdentifier)' == '' and $([MSBuild]::IsOsPlatform('Windows')) and '$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)' == 'X64' ">win-x64</RuntimeIdentifier>
+    <RuntimeIdentifier Condition=" '$(RuntimeIdentifier)' == '' and $([MSBuild]::IsOsPlatform('Windows')) and '$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)' == 'X86' ">win-x86</RuntimeIdentifier>
+    <RuntimeIdentifier Condition=" '$(RuntimeIdentifier)' == '' and $([MSBuild]::IsOsPlatform('Linux')) and '$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)' == 'X64' ">linux-x64</RuntimeIdentifier>
+    <RuntimeIdentifier Condition=" '$(RuntimeIdentifier)' == '' and $([MSBuild]::IsOsPlatform('Linux')) and '$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)' == 'X86' ">linux-x86</RuntimeIdentifier>
+    <RuntimeIdentifier Condition=" '$(RuntimeIdentifier)' == '' and $([MSBuild]::IsOsPlatform('OSX')) and '$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)' == 'X64' ">osx-x64</RuntimeIdentifier>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Uno.Wasm.Bootstrap" Version="@BROWSERUNOBOOTSTRAPVERSION@" />
+    <PackageReference Include="Uno.Wasm.Bootstrap.DevServer" Version="@BROWSERUNOBOOTSTRAPVERSION@" ExcludeAssets="build" />
+    <PackageReference Include="Uno.Foundation.Runtime.WebAssembly" Version="@BROWSERUNOFOUNDATIONVERSION@" />
+  </ItemGroup>
+
+  <!-- Adapted from https://github.com/unoplatform/Uno.Wasm.Bootstrap/blob/main/src/Uno.Wasm.Bootstrap.DevServer/build/Uno.Wasm.Bootstrap.DevServer.targets -->
+  <!-- The original code does not honor the $(RuntimeIdentifier) value, making it unable to be run on this workload -->
+  <PropertyGroup>
+    <!-- Web Project Run Parameters -->
+    <RunCommand>dotnet</RunCommand>
+
+    <!-- Nuget deployed run parameters -->
+    <_unoBinArgs>unowasm serve</_unoBinArgs>
+
+    <_UnoDevServerBasePath Condition="'$(TargetFramework)'=='netstandard2.0'">netcoreapp3.1</_UnoDevServerBasePath>
+    <_UnoDevServerBasePath Condition="'$(TargetFramework.substring(0,3))'=='net' and '$(TargetFramework)'!='netstandard2.0'">net5</_UnoDevServerBasePath>
+    <_UnoDevServerBasePath Condition="'$([MSBuild]::GetTargetFrameworkVersion($(TargetFramework)))' &gt; 5">net6</_UnoDevServerBasePath>
+
+    <!-- Uno.Wasm.Bootstrap internal args -->
+    <_unoBinArgs>&quot;$(NuGetPackageRoot)/uno.wasm.bootstrap.devserver/@BROWSERUNOBOOTSTRAPVERSION@/tools/server/$(_UnoDevServerBasePath)/dotnet-unowasm.dll&quot; serve $(_unoRunArgs)</_unoBinArgs>
+    <RunArguments>$(_unoBinArgs) $(_unoRunArgs) --pathbase &quot;$(MSBuildProjectDirectory)\bin\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\dist&quot; --configuration $(Configuration) --targetframework $(TargetFramework) $(AdditionalRunArguments)</RunArguments>
+  </PropertyGroup>
+
+</Project>

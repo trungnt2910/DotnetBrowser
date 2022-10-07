@@ -1,0 +1,27 @@
+{
+    "version": "@VERSION@",
+    "workloads": {
+      "browser": {
+        "description": ".NET SDK Workload for building Dotnet Browser applications.",
+        "packs": [
+          "Trungnt2910.Browser.Sdk",
+          "Trungnt2910.Browser.Ref",
+          "Trungnt2910.Browser.Runtime"
+        ]
+      }
+    },
+    "packs": {
+      "Trungnt2910.Browser.Sdk": {
+        "kind": "sdk",
+        "version": "@VERSION@"
+      },
+      "Trungnt2910.Browser.Ref": {
+        "kind": "framework",
+        "version": "@VERSION@"
+      },
+      "Trungnt2910.Browser.Runtime": {
+        "kind": "framework",
+        "version": "@VERSION@"
+      }
+    }
+  }

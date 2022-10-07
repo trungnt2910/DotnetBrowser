@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.Build.NoTargets">
+
+  <Import Project="../Shared/Common.targets" />
+
+  <PropertyGroup>
+    <Description>Dotnet Browser SDK. Enabled via the net6.0-browser TFM.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="**/*.in.*" />
+    <None Update="@(None)" PackagePath="" CopyToOutputDirectory="PreserveNewest" Pack="true" />
+  </ItemGroup>
+
+  <Import Project="$(_BrowserRootDirectory)eng/ReplaceText.targets" />
+
+  <Target Name="_ReplaceSdkText" BeforeTargets="Build;AssignTargetPaths" Inputs="$(MSBuildProjectFile);Sdk/Sdk.in.targets" Outputs="$(IntermediateOutputPath)Sdk.targets">
+    
+    <ReplaceText Input="Sdk/Sdk.in.targets" Output="$(IntermediateOutputPath)Sdk.targets" OldValue="@BROWSERVERSION@" NewValue="$(_BrowserVersion)" />
+
+    <ReplaceText Input="$(IntermediateOutputPath)Sdk.targets" Output="$(IntermediateOutputPath)Sdk.targets" OldValue="@BROWSERNETVERSION@" NewValue="$(_BrowserNetVersion)" />
+
+    <ReplaceText Input="$(IntermediateOutputPath)Sdk.targets" Output="$(IntermediateOutputPath)Sdk.targets" OldValue="@BROWSERUNOFOUNDATIONVERSION@" NewValue="$(_BrowserUnoFoundationVersion)" />
+
+    <ReplaceText Input="$(IntermediateOutputPath)Sdk.targets" Output="$(IntermediateOutputPath)Sdk.targets" OldValue="@BROWSERUNOBOOTSTRAPVERSION@" NewValue="$(_BrowserUnoBootstrapVersion)" />
+
+    <ItemGroup>
+      <None Include="$(IntermediateOutputPath)Sdk.targets" Link="Sdk/Sdk.targets" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath="Sdk" Visible="false" />
+      <FileWrites Include="$(IntermediateOutputPath)Sdk.targets" />
+    </ItemGroup>
+  
+  </Target>
+
+
+</Project>

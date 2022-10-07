@@ -1,0 +1,12 @@
+<Project>
+  <PropertyGroup>
+    <_BrowserVersion>1.0</_BrowserVersion>
+    <_BrowserNetVersion>6.0</_BrowserNetVersion>
+    <_BrowserTfm>net$(_BrowserNetVersion)-browser</_BrowserTfm>
+    <_BrowserFullTfm>net$(_BrowserNetVersion)-browser$(_BrowserVersion)</_BrowserFullTfm>
+    <_BrowserRootDirectory>$(MSBuildThisFileDirectory)</_BrowserRootDirectory>
+    <_BrowserUnoBootstrapVersion Condition=" '$(_BrowserUnoBootstrapVersion)' == '' ">4.0.0-dev.193</_BrowserUnoBootstrapVersion>
+    <_BrowserUnoFoundationVersion Condition=" '$(_BrowserUnoFoundationVersion)' == '' ">4.5.12</_BrowserUnoFoundationVersion>
+    <_BrowserManifestVersionBand Condition=" '$(_BrowserManifestVersionBand)' == '' ">6.0.200</_BrowserManifestVersionBand>
+  </PropertyGroup>
+</Project>

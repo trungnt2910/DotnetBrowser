@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.Build.NoTargets">
+
+  <Import Project="../Shared/Common.targets" />
+
+  <PropertyGroup>
+    <PackageId>$(PackageId).Manifest-$(_BrowserManifestVersionBand)</PackageId>
+    <Description>Dotnet Browser workload manifest</Description>
+  </PropertyGroup>
+
+  <Import Project="$(_BrowserRootDirectory)eng/ReplaceText.targets" />
+
+  <ItemGroup>
+    <None Update="WorkloadManifest.targets" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath="data" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../Trungnt2910.Browser.*/*.csproj" />
+  </ItemGroup>
+
+  <Target Name="_ReplaceJsonText"
+      BeforeTargets="Build;AssignTargetPaths"
+      Inputs="$(MSBuildProjectFile);WorkloadManifest.in.json"
+      Outputs="$(IntermediateOutputPath)WorkloadManifest.json">
+    
+    <ReplaceText
+        Input="WorkloadManifest.in.json"
+        Output="$(IntermediateOutputPath)WorkloadManifest.json"
+        OldValue="@VERSION@"
+        NewValue="$(Version)"
+    />
+
+    <ItemGroup>
+      <None
+          Include="$(IntermediateOutputPath)WorkloadManifest.json"
+          Link="WorkloadManifest.json"
+          CopyToOutputDirectory="PreserveNewest"
+          Pack="true"
+          PackagePath="data"
+      />
+      <FileWrites Include="$(IntermediateOutputPath)WorkloadManifest.json" />
+    </ItemGroup>
+  
+  </Target>
+
+</Project>

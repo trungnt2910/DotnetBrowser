@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "module": "none",
+    //"declaration": true,
+    "diagnostics": true,
+    "noImplicitAny": true,
+    "outDir": "WasmScripts",
+    //"inlineSourceMap": true,
+    "locale": "en-US",
+    "target": "ES2017",
+    "lib": [ "ES2018", "DOM", "DOM.Iterable" ]
+  },
+  "include": [
+    "ts/**/*"
+  ]
+}

@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net$(_BrowserNetVersion)</TargetFramework>
+    <!--  
+      Microsoft.DotNet.SharedFramework.Sdk requires our framework assemblies to be signed 
+      (to have a "public key token")
+    -->
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>$(_BrowserRootDirectory)/DotnetBrowser.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.8.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Uno.Foundation.Runtime.WebAssembly" Version="$(_BrowserUnoFoundationVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="WasmScripts\**\*.js" />
+    <UpToDateCheckInput Include="ts\**\*" />
+    <UpToDateCheckInput Include="tsBindings\**\*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="ts\JsObject.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="tsconfig.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="WasmScripts\" />
+  </ItemGroup>
+
+</Project>

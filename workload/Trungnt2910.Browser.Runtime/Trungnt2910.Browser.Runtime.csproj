@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.Build.NoTargets">
+
+  <Import Project="../Shared/Common.targets" />
+  <Import Project="../Shared/Frameworks.targets" />
+
+  <PropertyGroup>
+    <Description>Dotnet Browser runtime pack</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="$(_BrowserRootDirectory)src/Trungnt2910.Browser/bin/$(Configuration)/net$(_BrowserNetVersion)/Trungnt2910.Browser.dll" />
+    <None Update="@(None)" CopyToOutputDirectory="PreserveNewest" Visible="false" Link="lib/$(_BrowserFullTfm)/%(FileName)%(Extension)" />
+    <_PackageFiles Include="@(None)" PackagePath="lib/$(_BrowserFullTfm)" TargetPath="lib/$(_BrowserFullTfm)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="$(_BrowserRootDirectory)src/Trungnt2910.Browser/Trungnt2910.Browser.csproj" />
+  </ItemGroup>
+
+</Project>
