@@ -121,6 +121,8 @@ internal sealed class GobieGeneratorNameAttribute : Attribute
     public string AttributeName { get; }
 
     public string? Namespace { get; set; }
+
+    public bool AllowMultiple { get; set; }
 }
 
 [AttributeUsage(AttributeTargets.Property, Inherited = false, AllowMultiple = false)]

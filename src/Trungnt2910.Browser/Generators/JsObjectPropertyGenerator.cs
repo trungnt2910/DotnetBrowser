@@ -2,7 +2,7 @@
 
 namespace Trungnt2910.Browser.Generators;
 
-[GobieGeneratorName($"{nameof(JsObject)}PropertyAttribute", Namespace = "Trungnt2910.Browser.Generators")]
+[GobieGeneratorName($"{nameof(JsObject)}PropertyAttribute", Namespace = "Trungnt2910.Browser.Generators", AllowMultiple = true)]
 internal sealed class JsObjectPropertyGenerator : GobieClassGenerator
 {
     [Required]
@@ -14,8 +14,13 @@ internal sealed class JsObjectPropertyGenerator : GobieClassGenerator
     [Required]
     public string Type { get; set; } = string.Empty;
 
+    public string Comments { get; set; } = "To be added.";
+
     [GobieTemplate]
     const string Template = @"
+        /// <summary>
+        /// {{Comments}}
+        /// </summary>
         public {{Type}}? {{Name}}
         {
             get => {{Type}}.FromExpression($""{_jsThis}.{{JsName}}"");
@@ -24,7 +29,7 @@ internal sealed class JsObjectPropertyGenerator : GobieClassGenerator
     ";
 }
 
-[GobieGeneratorName($"{nameof(JsObject)}ReadOnlyPropertyAttribute", Namespace = "Trungnt2910.Browser.Generators")]
+[GobieGeneratorName($"{nameof(JsObject)}ReadOnlyPropertyAttribute", Namespace = "Trungnt2910.Browser.Generators", AllowMultiple = true)]
 internal sealed class JsObjectReadOnlyPropertyGenerator : GobieClassGenerator
 {
     [Required]
@@ -36,8 +41,13 @@ internal sealed class JsObjectReadOnlyPropertyGenerator : GobieClassGenerator
     [Required]
     public string Type { get; set; } = string.Empty;
 
+    public string Comments { get; set; } = "To be added.";
+
     [GobieTemplate]
     const string Template = @"
+        /// <summary>
+        /// {{Comments}}
+        /// </summary>
         public {{Type}}? {{Name}} => {{Type}}.FromExpression($""{_jsThis}.{{JsName}}"");
     ";
 }

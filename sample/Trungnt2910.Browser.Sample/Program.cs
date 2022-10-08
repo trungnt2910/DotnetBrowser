@@ -12,8 +12,8 @@ Console.WriteLine("Hello World!");
 Console.WriteLine(Window.Instance.Location.Href);
 
 var document = JsObject.FromExpression("window.document").Cast<Document>();
-var textNode = document.InvokeMember("createTextNode", "Hello world!");
-document["body"].InvokeMember("appendChild", textNode);
+var textNode = document.CreateTextNode("Hello World!");
+document.Body.InvokeMember("appendChild", textNode);
 #elif WINDOWS
 Console.WriteLine(Directory.GetCurrentDirectory());
 #endif

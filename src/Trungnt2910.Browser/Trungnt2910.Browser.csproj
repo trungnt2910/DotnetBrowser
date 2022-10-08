@@ -4,6 +4,7 @@
     <TargetFramework>net$(_BrowserNetVersion)</TargetFramework>
     <Nullable>enable</Nullable>
     <LangVersion>preview</LangVersion>
+    <EnablePreviewFeatures>True</EnablePreviewFeatures>
     <!--  
       Microsoft.DotNet.SharedFramework.Sdk requires our framework assemblies to be signed 
       (to have a "public key token")
