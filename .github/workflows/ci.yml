@@ -1,0 +1,79 @@
+  
+name: CI
+
+on:
+  create:
+    branches:
+      - release/**
+  push:
+    branches:
+    - master
+    - dev/**
+  pull_request:
+    branches:
+    - master
+
+jobs:
+  build:
+
+    env:
+      BUILD_CONFIG: 'Release'
+
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+          
+    - name: Install GitVersion
+      uses: gittools/actions/gitversion/setup@v0.9.10
+      with:
+        versionSpec: '5.x'
+
+    - name: Determine Version
+      id:   gitversion
+      uses: gittools/actions/gitversion/execute@v0.9.10
+
+    - name: Setup NuGet
+      uses: NuGet/setup-nuget@v1.0.5
+
+    - name: Setup .NET
+      run: |
+        Invoke-WebRequest 'https://dot.net/v1/dotnet-install.ps1' -OutFile 'dotnet-install.ps1'
+        ./dotnet-install.ps1 -Channel Current
+      shell: pwsh
+
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v1.0.2
+
+    - name: Restore tools
+      run: dotnet tool restore
+
+    - name: Build and install workload
+      run: dotnet cake build.cake --target=InstallWorkload --configuration=$env:BUILD_CONFIG --version=${{ steps.gitversion.outputs.assemblySemVer }}
+
+    - name: Build sample app
+      run: dotnet build sample/Trungnt2910.Browser.Sample.csproj -p:Configuration=$env:BUILD_CONFIG -p:Version=${{ steps.gitversion.outputs.assemblySemVer }}
+
+    - name: Deploy sample to GitHub pages
+      uses: peaceiris/actions-gh-pages@v3
+      if: ${{ github.ref == 'refs/heads/master' }}
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: sample/Trungnt2910.Browser.Sample/bin/$env:BUILD_CONFIG/net6.0-browser/win-x64/dist
+
+    - name: Publish nuget artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: packages.${{ steps.gitversion.outputs.semVer }}
+        path: out/nuget/**
+
+    # - name: Publish dev
+    #   if: github.ref == 'refs/heads/master'
+    #   run: nuget push .nupkgs\** -Source 'https://api.nuget.org/v3/index.json' -ApiKey ${{secrets.NUGET_API_KEY}}
+
+    # - name: Publish
+    #   if: startsWith(github.ref, 'refs/heads/release')
+    #   run: nuget push .nupkgs\** -Source 'https://api.nuget.org/v3/index.json' -ApiKey ${{secrets.NUGET_API_KEY}}
