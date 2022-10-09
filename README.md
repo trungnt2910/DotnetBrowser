@@ -46,6 +46,23 @@ var textNode = document.InvokeMember("createTextNode", "Hello world!");
 
 // Same for `document.body`, and `document.body.appendChild`.
 document["body"].InvokeMember("appendChild", textNode);
+
+// Events are supported! Here's how you can use one of them.
+document.Paste += (sender, clipboardEvent) =>
+{
+    var dataTransfer = clipboardEvent.ClipboardData;
+
+    var text = dataTransfer.GetData("text/plain");
+
+    if (!string.IsNullOrEmpty(text))
+    {
+        Console.WriteLine($"Pasted string: \"{Uno.Foundation.WebAssemblyRuntime.EscapeJs(text)}\"");
+    }
+    else
+    {
+        Console.WriteLine("Did not paste any text.");
+    }
+};
 ```
 
 ## Why?

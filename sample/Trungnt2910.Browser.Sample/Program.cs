@@ -18,7 +18,7 @@ document.Body.AppendChild(textNode);
 
 int count = 0;
 
-textNode.Cast<EventTarget>().AddEventListener("selectstart", (sender, jsEvent) =>
+textNode.SelectStart += (sender, jsEvent) =>
 {
     Console.WriteLine("How dare you select me!");
     ++count;
@@ -32,7 +32,23 @@ textNode.Cast<EventTarget>().AddEventListener("selectstart", (sender, jsEvent) =
     {
         new Rickroller.Rickroll().Start();
     }
-});
+};
+
+document.Paste += (sender, clipboardEvent) =>
+{
+    var dataTransfer = clipboardEvent.ClipboardData;
+
+    var text = dataTransfer.GetData("text/plain");
+
+    if (!string.IsNullOrEmpty(text))
+    {
+        Console.WriteLine($"Pasted string: \"{Uno.Foundation.WebAssemblyRuntime.EscapeJs(text)}\"");
+    }
+    else
+    {
+        Console.WriteLine("Did not paste any text.");
+    }
+};
 
 await Task.Delay(-1);
 #elif WINDOWS
