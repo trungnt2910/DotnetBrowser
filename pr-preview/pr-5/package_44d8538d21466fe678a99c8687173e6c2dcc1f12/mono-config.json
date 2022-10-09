@@ -92,6 +92,10 @@
       "behavior": "assembly"
     },
     {
+      "name": "Rickroller.dll",
+      "behavior": "assembly"
+    },
+    {
       "name": "icudt.dat",
       "behavior": "icu"
     }
