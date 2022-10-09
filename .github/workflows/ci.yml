@@ -55,15 +55,15 @@ jobs:
     - name: Build and install workload
       run: dotnet cake build.cake --target=InstallWorkload --configuration=$env:BUILD_CONFIG --build-version=${{ steps.gitversion.outputs.majorMinorPatch }} --package-version=${{ steps.gitversion.outputs.semVer }}
 
-    - name: Build sample app
-      run: dotnet build sample/Trungnt2910.Browser.Sample/Trungnt2910.Browser.Sample.csproj -p:Configuration=$env:BUILD_CONFIG -p:Version=${{ steps.gitversion.outputs.assemblySemVer }}
+    - name: Build and publish sample app
+      run: dotnet publish sample/Trungnt2910.Browser.Sample/Trungnt2910.Browser.Sample.csproj --configuration $env:BUILD_CONFIG -p:Version=${{ steps.gitversion.outputs.assemblySemVer }} --framework=net6.0-browser
 
     - name: Deploy sample to GitHub pages
       uses: peaceiris/actions-gh-pages@v3
-      if: ${{ github.ref == 'refs/heads/master' }}
+      # if: ${{ github.ref == 'refs/heads/master' }}
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: sample/Trungnt2910.Browser.Sample/bin/$env:BUILD_CONFIG/net6.0-browser/win-x64/dist
+        publish_dir: sample/Trungnt2910.Browser.Sample/bin/${{ env.BUILD_CONFIG }}/net6.0-browser/win-x64/publish
 
     - name: Publish nuget artifacts
       uses: actions/upload-artifact@v2
