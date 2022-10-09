@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <IsRoslynComponent>true</IsRoslynComponent>
+    <!-- 👇 We don't want to reference the source generator dll directly in consuming projects -->
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <ImplicitUsings>true</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="../Trungnt2910.Browser/Generators/GeneratorAttributes.cs" />
+    <Compile Include="../Gobie/src/Gobie/Gobie/**/*.cs" />
+    <Compile Remove="../Gobie/src/Gobie/Gobie/obj/**/*.cs" />
+    <Compile Remove="../Gobie/src/Gobie/Gobie/GobieGenerator.public.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.3" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.2.0" PrivateAssets="all" />
+  </ItemGroup>
+	
+</Project>
