@@ -1,0 +1,99 @@
+{
+  "vfs_prefix": "managed",
+  "assembly_root": "managed",
+  "enable_debugging": 0,
+  "assets": [
+    {
+      "name": "Uno.Wasm.TimezoneData.dll",
+      "behavior": "assembly"
+    },
+    {
+      "name": "netstandard.dll",
+      "behavior": "assembly"
+    },
+    {
+      "name": "System.Runtime.dll",
+      "behavior": "assembly"
+    },
+    {
+      "name": "System.Private.CoreLib.dll",
+      "behavior": "assembly"
+    },
+    {
+      "name": "System.Private.Uri.dll",
+      "behavior": "assembly"
+    },
+    {
+      "name": "System.Runtime.InteropServices.dll",
+      "behavior": "assembly"
+    },
+    {
+      "name": "System.Threading.dll",
+      "behavior": "assembly"
+    },
+    {
+      "name": "System.Collections.dll",
+      "behavior": "assembly"
+    },
+    {
+      "name": "System.Memory.dll",
+      "behavior": "assembly"
+    },
+    {
+      "name": "System.Collections.Concurrent.dll",
+      "behavior": "assembly"
+    },
+    {
+      "name": "System.Text.RegularExpressions.dll",
+      "behavior": "assembly"
+    },
+    {
+      "name": "System.Linq.dll",
+      "behavior": "assembly"
+    },
+    {
+      "name": "System.Runtime.Serialization.Formatters.dll",
+      "behavior": "assembly"
+    },
+    {
+      "name": "System.Private.Runtime.InteropServices.JavaScript.dll",
+      "behavior": "assembly"
+    },
+    {
+      "name": "System.Console.dll",
+      "behavior": "assembly"
+    },
+    {
+      "name": "Trungnt2910.Browser.Sample.dll",
+      "behavior": "assembly"
+    },
+    {
+      "name": "Trungnt2910.Browser.dll",
+      "behavior": "assembly"
+    },
+    {
+      "name": "Uno.Foundation.Runtime.WebAssembly.dll",
+      "behavior": "assembly"
+    },
+    {
+      "name": "Uno.Foundation.Logging.dll",
+      "behavior": "assembly"
+    },
+    {
+      "name": "Uno.Diagnostics.Eventing.dll",
+      "behavior": "assembly"
+    },
+    {
+      "name": "System.Text.Json.dll",
+      "behavior": "assembly"
+    },
+    {
+      "name": "System.Text.Encodings.Web.dll",
+      "behavior": "assembly"
+    },
+    {
+      "name": "icudt.dat",
+      "behavior": "icu"
+    }
+  ]
+}
