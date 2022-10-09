@@ -14,11 +14,24 @@ Console.WriteLine(Window.Instance.Location.Href);
 
 var document = JsObject.FromExpression("window.document").Cast<Document>();
 var textNode = document.CreateTextNode("Hello World!");
-document.Body.InvokeMember("appendChild", textNode);
+document.Body.AppendChild(textNode);
+
+int count = 0;
 
 textNode.Cast<EventTarget>().AddEventListener("selectstart", (sender, jsEvent) =>
 {
     Console.WriteLine("How dare you select me!");
+    ++count;
+
+    if (count > 10)
+    {
+        Window.Instance.InvokeMember("alert", "Please stop selecting me.");
+    }
+
+    if (count > 15)
+    {
+        Window.Instance.Location.Href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+    }
 });
 
 await Task.Delay(-1);
