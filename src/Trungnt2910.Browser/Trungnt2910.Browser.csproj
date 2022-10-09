@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net$(_BrowserNetVersion)</TargetFramework>
@@ -50,9 +50,11 @@
     <ProjectReference Include="..\Trungnt2910.Browser.PostProcessing\Trungnt2910.Browser.PostProcessing.csproj" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
-  <UsingTask TaskName="Trungnt2910.Browser.PostProcessing.GeneratorCleanup" AssemblyFile="..\Trungnt2910.Browser.PostProcessing\bin\$(Configuration)\netstandard2.0\Trungnt2910.Browser.PostProcessing.dll" />
+  <UsingTask TaskName="Trungnt2910.Browser.PostProcessing.GeneratorCleanup" 
+			 AssemblyFile="..\Trungnt2910.Browser.PostProcessing\bin\$(Configuration)\netstandard2.0\Trungnt2910.Browser.PostProcessing.dll"
+			 TaskFactory="TaskHostFactory" />
 
-  <Target Name="AssemblyPostProcessing" AfterTargets="Build">
+  <Target Name="AssemblyPostProcessing" DependsOnTargets="CoreCompile">
     <GeneratorCleanup AssemblyPath="$(OutputPath)\$(AssemblyName).dll" SnkPath="$(AssemblyOriginatorKeyFile)" />
   </Target>
 
