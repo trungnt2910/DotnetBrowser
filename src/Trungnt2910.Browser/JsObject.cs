@@ -8,21 +8,41 @@ using Uno.Foundation;
 
 namespace Trungnt2910.Browser;
 
+/// <summary>
+/// The base class of all marshalled JavaScript objects.
+/// </summary>
 public class JsObject : IConvertible
 {
     private const string _jsType = "Trungnt2910.Browser.JsObject";
     private static readonly Dictionary<int, WeakReference<JsObject>> _objectCache = new();
 
-    protected readonly int _handle;
-    protected string? _type;
+    private string? _type;
     internal readonly string _jsThis;
 
+    /// <summary>
+    /// The JavaScript handle of this object.
+    /// </summary>
+    protected readonly int JsHandle;
+
+    /// <summary>
+    /// Constructs a <see cref="JsObject"/> from a JavaScript handle.
+    /// </summary>
+    /// <param name="handle">The JavaScript handle</param>
+    /// <remarks>
+    /// This constructor is for internal purposes only. The preferred way of getting
+    /// an object from a handle is <see cref="FromHandle(int)"/>
+    /// </remarks>
     protected JsObject(int handle)
     {
-        _handle = handle;
-        _jsThis = $"{_jsType}.ReferencedObjects[{_handle}]";
+        JsHandle = handle;
+        _jsThis = $"{_jsType}.ReferencedObjects[{JsHandle}]";
     }
 
+    /// <summary>
+    /// Creates a <see cref="JsObject"/> from a raw JavaScript expression.
+    /// </summary>
+    /// <param name="jsExpression">The JavaScript expression as a <see langword="string"/>.</param>
+    /// <returns>A <see cref="JsObject"/> representing the expression's result, or <see langword="null"/> if the expression evaluates to <c>null</c> or <c>undefined</c>.</returns>
     public static JsObject? FromExpression(string jsExpression)
     {
         var objectHandleString = WebAssemblyRuntime.InvokeJS($"{_jsType}.ConstructObject({jsExpression})");
@@ -33,6 +53,11 @@ public class JsObject : IConvertible
         return FromHandle(int.Parse(objectHandleString));
     }
 
+    /// <summary>
+    /// Returns a <see cref="JsObject"/> from a JavaScript handle.
+    /// </summary>
+    /// <param name="objectHandle">The JavaScript handle.</param>
+    /// <returns>A <see cref="JsObject"/> or <see langword="null"/> if the handle is invalid.</returns>
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static JsObject FromHandle(int objectHandle)
     {
@@ -79,34 +104,70 @@ public class JsObject : IConvertible
         }
     }
 
+    /// <summary>
+    /// Gets or sets a member of the current object.
+    /// </summary>
+    /// <param name="index">The member name</param>
+    /// <returns>A <see cref="JsObject"/> representing the corresponding JavaScript member, or <see langword="null"/> if the member is equal to <c>null</c> or <c>undefined</c>.</returns>
+    /// <remarks>
+    /// This function should only be used when strongly-typed C# bindings are not available yet.
+    /// </remarks>
     public JsObject? this[string index]
     {
         get => FromExpression($"{_jsThis}[\"{WebAssemblyRuntime.EscapeJs(index)}\"]");
         set => WebAssemblyRuntime.InvokeJS($"{_jsThis}[\"{WebAssemblyRuntime.EscapeJs(index)}\"] = {value?._jsThis ?? "null"}");
     }
 
+    /// <summary>
+    /// Invokes the current object as a JavaScript function.
+    /// </summary>
+    /// <param name="args">The function's arguments.</param>
+    /// <returns>A <see cref="JsObject"/> representing the function's result, or <see langword="null"/> if the function evaluates to <c>null</c> or <c>undefined</c>.</returns>
     public JsObject? Invoke(params object?[]? args)
     {
         var argsStringList = args?.Select(a => ToJsObjectString(a));
         return FromExpression($"{_jsThis}({string.Join(",", argsStringList ?? Array.Empty<string>())})");
     }
 
+    /// <summary>
+    /// Invokes a member of the current object as a JavaScript function.
+    /// </summary>
+    /// <param name="index">The function's name.</param>
+    /// <param name="args">The function's arguments.</param>
+    /// <returns>A <see cref="JsObject"/> representing the function's result, or <see langword="null"/> if the function evaluates to <c>null</c> or <c>undefined</c>.</returns>
     public JsObject? InvokeMember(string index, params object?[]? args)
     {
         var argsStringList = args?.Select(a => ToJsObjectString(a));
         return FromExpression($"{_jsThis}[\"{WebAssemblyRuntime.EscapeJs(index)}\"]({string.Join(",", argsStringList ?? Array.Empty<string>())})");
     }
 
+    /// <summary>
+    /// Sets the value of the current object's JavaScript property to something other than a <see cref="JsObject"/>
+    /// </summary>
+    /// <param name="index">The property's name.</param>
+    /// <param name="value">The new value.</param>
+    /// <remarks>
+    /// <see cref="this[string]"/> is preferred the value is a <see cref="JsObject"/>.
+    /// </remarks>
     public void SetValue(string index, object value)
     {
         WebAssemblyRuntime.InvokeJS($"{_jsThis}[\"{WebAssemblyRuntime.EscapeJs(index)}\"] = {ToJsObjectString(value)}");
     }
 
+    /// <summary>
+    /// Gets the underlying JavaScript object's type, using the JavaScript <c>typeof</c> keyword.
+    /// </summary>
+    /// <returns>The underlying JavaScript object's type.</returns>
     public string GetJsType()
     {
         return _type ??= WebAssemblyRuntime.InvokeJS($"typeof {_jsThis}");
     }
 
+    /// <summary>
+    /// Returns this object as a C# string.
+    /// If the object is not a JavaScript string, returns the object's JSON representation.
+    /// </summary>
+    /// <returns>A string value.</returns>
     public override string ToString()
     {
         if (GetJsType() == "string")
@@ -121,13 +182,19 @@ public class JsObject : IConvertible
         return WebAssemblyRuntime.InvokeJS(_jsThis);
     }
 
+    /// <summary>
+    /// Cast this object to another <see cref="JsObject"/>-derived type.
+    /// </summary>
+    /// <typeparam name="T">Any type that derives from <see cref="JsObject"/>.</typeparam>
+    /// <returns>A value of type <typeparamref name="T"/> that represents the same JavaScript object.</returns>
     public T Cast<T>() where T: JsObject
     {
         var fromHandle = typeof(T).GetMethod(nameof(FromHandle), BindingFlags.Static | BindingFlags.Public);
-        return (T)fromHandle!.Invoke(null, new object[] { _handle })!;
+        return (T)fromHandle!.Invoke(null, new object[] { JsHandle })!;
     }
 
     #region IConvertible
+    /// <inheritdoc/>
     public TypeCode GetTypeCode()
     {
         switch (GetJsType())
@@ -143,11 +210,13 @@ public class JsObject : IConvertible
         }
     }
 
+    /// <inheritdoc/>
     public bool ToBoolean(IFormatProvider? provider)
     {
         return bool.Parse(WebAssemblyRuntime.InvokeJS($"({_jsThis}) ? true : false"));
     }
 
+    /// <inheritdoc/>
     public byte ToByte(IFormatProvider? provider)
     {
         switch (GetJsType())
@@ -160,6 +229,7 @@ public class JsObject : IConvertible
         }
     }
 
+    /// <inheritdoc/>
     public char ToChar(IFormatProvider? provider)
     {
         switch (GetJsType())
@@ -173,6 +243,7 @@ public class JsObject : IConvertible
         }
     }
 
+    /// <inheritdoc/>
     public DateTime ToDateTime(IFormatProvider? provider)
     {
         switch (GetJsType())
@@ -186,6 +257,7 @@ public class JsObject : IConvertible
         }
     }
 
+    /// <inheritdoc/>
     public decimal ToDecimal(IFormatProvider? provider)
     {
         switch (GetJsType())
@@ -198,6 +270,7 @@ public class JsObject : IConvertible
         }
     }
 
+    /// <inheritdoc/>
     public double ToDouble(IFormatProvider? provider)
     {
         switch (GetJsType())
@@ -210,6 +283,7 @@ public class JsObject : IConvertible
         }
     }
 
+    /// <inheritdoc/>
     public short ToInt16(IFormatProvider? provider)
     {
         switch (GetJsType())
@@ -222,6 +296,7 @@ public class JsObject : IConvertible
         }
     }
 
+    /// <inheritdoc/>
     public int ToInt32(IFormatProvider? provider)
     {
         switch (GetJsType())
@@ -234,6 +309,7 @@ public class JsObject : IConvertible
         }
     }
 
+    /// <inheritdoc/>
     public long ToInt64(IFormatProvider? provider)
     {
         switch (GetJsType())
@@ -246,6 +322,7 @@ public class JsObject : IConvertible
         }
     }
 
+    /// <inheritdoc/>
     public sbyte ToSByte(IFormatProvider? provider)
     {
         switch (GetJsType())
@@ -258,6 +335,7 @@ public class JsObject : IConvertible
         }
     }
 
+    /// <inheritdoc/>
     public float ToSingle(IFormatProvider? provider)
     {
         switch (GetJsType())
@@ -270,16 +348,19 @@ public class JsObject : IConvertible
         }
     }
 
+    /// <inheritdoc/>
     public string ToString(IFormatProvider? provider)
     {
         return ToString();
     }
 
+    /// <inheritdoc/>
     public object ToType(Type conversionType, IFormatProvider? provider)
     {
         throw new NotImplementedException();
     }
 
+    /// <inheritdoc/>
     public ushort ToUInt16(IFormatProvider? provider)
     {
         switch (GetJsType())
@@ -292,6 +373,7 @@ public class JsObject : IConvertible
         }
     }
 
+    /// <inheritdoc/>
     public uint ToUInt32(IFormatProvider? provider)
     {
         switch (GetJsType())
@@ -304,6 +386,7 @@ public class JsObject : IConvertible
         }
     }
 
+    /// <inheritdoc/>
     public ulong ToUInt64(IFormatProvider? provider)
     {
         switch (GetJsType())
@@ -317,14 +400,18 @@ public class JsObject : IConvertible
     }
     #endregion
 
+    /// <summary>
+    /// Finalizes the current managed object. This includes
+    /// decrementing the JavaScript object reference count.
+    /// </summary>
     ~JsObject()
     {
-        if (_objectCache.TryGetValue(_handle, out var reference) && 
+        if (_objectCache.TryGetValue(JsHandle, out var reference) && 
             reference.TryGetTarget(out JsObject? obj) && 
             obj == this)
         {
-            _objectCache.Remove(_handle);
+            _objectCache.Remove(JsHandle);
         }
-        WebAssemblyRuntime.InvokeJS($"{_jsType}.DisposeObject({_handle})");
+        WebAssemblyRuntime.InvokeJS($"{_jsType}.DisposeObject({JsHandle})");
     }
 }

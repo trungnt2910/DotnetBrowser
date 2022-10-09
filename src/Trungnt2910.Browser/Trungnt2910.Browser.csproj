@@ -1,10 +1,14 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net$(_BrowserNetVersion)</TargetFramework>
     <Nullable>enable</Nullable>
     <LangVersion>preview</LangVersion>
     <EnablePreviewFeatures>True</EnablePreviewFeatures>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <!-- Ignore those spam warnings to filter out the real problems -->
+    <!-- No matching param tag in XML comment; Cref attribute cannot be resolved; Referenced assembly does not have a strong name -->
+    <NoWarn>CS1573;CS1574;CS8002</NoWarn>
     <!--  
       Microsoft.DotNet.SharedFramework.Sdk requires our framework assemblies to be signed 
       (to have a "public key token")
