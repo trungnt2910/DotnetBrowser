@@ -18,6 +18,15 @@ internal class MethodGeneratorGeneratorHandler : IHandler
             maxParams = MethodGeneratorGeneratorAttribute.DefaultMaxParams;
         }
 
+        var includeReturnTypeParamArg = attribute.ArgumentList?.Arguments
+            .Single(a => a.NameEquals?.Name.ToString() == nameof(MethodGeneratorGeneratorAttribute.IncludeReturnTypeParam))
+            ?.Expression;
+
+        if (!bool.TryParse(includeReturnTypeParamArg?.ToString(), out var includeReturnTypeParam))
+        {
+            includeReturnTypeParam = MethodGeneratorGeneratorAttribute.DefaultIncludeReturnTypeParam;
+        }
+
         var baseNameArg = attribute.ArgumentList?.Arguments
             .Single(a => a.NameEquals?.Name.ToString() == nameof(MethodGeneratorGeneratorAttribute.BaseName))
             ?.Expression;
@@ -34,7 +43,7 @@ internal class MethodGeneratorGeneratorHandler : IHandler
 
         for (int i = 0; i < maxParams; ++i)
         {
-            sb.AppendLine(Build(baseName, template, i));
+            sb.AppendLine(Build(baseName, template, includeReturnTypeParam, i));
         }
 
         var content = sb.ToString();
@@ -44,18 +53,22 @@ internal class MethodGeneratorGeneratorHandler : IHandler
             .Cast<ClassDeclarationSyntax>();
     }
 
-    private string Build(string baseName, string template, int paramCount)
+    private string Build(string baseName, string template, bool includeReturnTypeParam, int paramCount)
     {
         var sb = new StringBuilder();
-        var typeArguments = string.Join(",", (new[] { "TReturn" }).Concat(Enumerable.Range(1, paramCount).Select(i => $"T{i}")));
+        var returnTypeArr = includeReturnTypeParam ? new[] { "TReturn" } : Array.Empty<string>();
+        var typeArguments = string.Join(",", returnTypeArr.Concat(Enumerable.Range(1, paramCount).Select(i => $"T{i}")));
 
         var processedTemplate = template
             .Replace("@@RETURNTYPE@@", "TReturn")
             .Replace("@@PARAMETERS_WITH_TYPE@@", string.Join(",", Enumerable.Range(1, paramCount).Select(i => $"{{{{T{i}}}}} {{{{Param{i}}}}}")))
             .Replace("@@PARAMETERS_TO_JS_OBJECT_STRING@@", string.Join(", ", Enumerable.Range(1, paramCount).Select(i => $"{{(global::Trungnt2910.Browser.JsObject.ToJsObjectString({{{{Param{i}}}}}))}}")));
 
-        sb.AppendLine($"[global::Gobie.GobieGeneratorName($\"{baseName}Attribute<{typeArguments}>\", Namespace = \"Trungnt2910.Browser.Generators\", AllowMultiple = true)]");
-        sb.AppendLine($"internal sealed class {baseName}Generator<{typeArguments}> : global::Gobie.GobieClassGenerator");
+        bool hasTypeArguments = typeArguments.Any();
+        var typeArgumentsInBrackets = hasTypeArguments ? $"<{typeArguments}>" : "";
+
+        sb.AppendLine($"[global::Gobie.GobieGeneratorName($\"{baseName}Attribute{typeArgumentsInBrackets}\", Namespace = \"Trungnt2910.Browser.Generators\", AllowMultiple = true)]");
+        sb.AppendLine($"internal sealed class {baseName}Generator{typeArgumentsInBrackets} : global::Gobie.GobieClassGenerator");
         sb.Append($@"{{
     [global::Gobie.Required]
     public string JsName {{ get; set; }} = string.Empty;

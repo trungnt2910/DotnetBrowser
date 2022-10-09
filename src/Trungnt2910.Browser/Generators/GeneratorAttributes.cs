@@ -2,14 +2,18 @@
 
 namespace Trungnt2910.Browser.Generators;
 
-[AttributeUsage(AttributeTargets.Assembly)]
+[AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
 internal class MethodGeneratorGeneratorAttribute : Attribute
 {
     public const string DefaultBaseName = "MethodGenerator";
 
+    public const bool DefaultIncludeReturnTypeParam = true;
+    
     public const int DefaultMaxParams = 8;
 
     public string BaseName { get; set; } = DefaultBaseName;
+
+    public bool IncludeReturnTypeParam { get; set; } = true;
 
     public int MaxParams { get; set; } = DefaultMaxParams;
 
