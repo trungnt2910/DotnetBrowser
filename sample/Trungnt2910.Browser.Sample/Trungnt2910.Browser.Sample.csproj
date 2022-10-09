@@ -6,4 +6,8 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Rickroller" Version="0.0.1-dev.0.1" />
+  </ItemGroup>
+
 </Project>

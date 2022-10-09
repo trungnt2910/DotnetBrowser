@@ -30,11 +30,12 @@ textNode.Cast<EventTarget>().AddEventListener("selectstart", (sender, jsEvent) =
 
     if (count > 15)
     {
-        Window.Instance.Location.Href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+        new Rickroller.Rickroll().Start();
     }
 });
 
 await Task.Delay(-1);
 #elif WINDOWS
 Console.WriteLine(Directory.GetCurrentDirectory());
+new Rickroller.Rickroll().Start();
 #endif
