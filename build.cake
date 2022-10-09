@@ -79,8 +79,8 @@ Task("Build")
     DotNetBuild("src/Trungnt2910.Browser/Trungnt2910.Browser.csproj", settings);
 });
 
-Task("PackageWorkload")
-    .IsDependentOn("Build")
+Task("BuildAndPackageWorkload")
+    .IsDependentOn("Restore")
     .Does(() =>
 {
     var packSettings = new DotNetPackSettings
@@ -91,6 +91,13 @@ Task("PackageWorkload")
         // Some of the nugets here depend on output generated during build.
         NoBuild = false
     };
+
+    // Clean up the output of the manifest project first, else the old manifest may remain.
+    DotNetClean("workload/Trungnt2910.NET.Sdk.Browser/Trungnt2910.NET.Sdk.Browser.csproj", new DotNetCleanSettings() 
+    { 
+        MSBuildSettings = msbuildsettings,
+        Configuration = configuration 
+    });
 
     foreach (var name in packNames)
     {
@@ -105,7 +112,7 @@ Task("PackageWorkload")
 });
 
 Task("InstallWorkload")
-    .IsDependentOn("PackageWorkload")
+    .IsDependentOn("BuildAndPackageWorkload")
     .Does(() =>
 {
     Console.WriteLine($"Installing workload for SDK version {TargetEnvironment.DotNetCliFeatureBand}, at {TargetEnvironment.DotNetInstallPath}");
@@ -143,7 +150,7 @@ Task("UninstallWorkload")
 
 Task("Default")
     .IsDependentOn("Build")
-    .IsDependentOn("PackageWorkload");
+    .IsDependentOn("BuildAndPackageWorkload");
 
 // EXECUTION
 

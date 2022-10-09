@@ -54,11 +54,9 @@
     <ProjectReference Include="..\Trungnt2910.Browser.PostProcessing\Trungnt2910.Browser.PostProcessing.csproj" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
-  <UsingTask TaskName="Trungnt2910.Browser.PostProcessing.GeneratorCleanup" 
-			 AssemblyFile="..\Trungnt2910.Browser.PostProcessing\bin\$(Configuration)\netstandard2.0\Trungnt2910.Browser.PostProcessing.dll"
-			 TaskFactory="TaskHostFactory" />
+  <UsingTask TaskName="Trungnt2910.Browser.PostProcessing.GeneratorCleanup" AssemblyFile="..\Trungnt2910.Browser.PostProcessing\bin\$(Configuration)\netstandard2.0\Trungnt2910.Browser.PostProcessing.dll" TaskFactory="TaskHostFactory" />
 
-  <Target Name="AssemblyPostProcessing" DependsOnTargets="CoreCompile">
+  <Target Name="AssemblyPostProcessing" AfterTargets="CopyFilesToOutputDirectory">
     <GeneratorCleanup AssemblyPath="$(OutputPath)\$(AssemblyName).dll" SnkPath="$(AssemblyOriginatorKeyFile)" />
   </Target>
 
