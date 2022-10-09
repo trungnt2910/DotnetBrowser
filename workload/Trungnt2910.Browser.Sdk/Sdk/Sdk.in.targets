@@ -86,10 +86,4 @@
     <RunArguments>$(_unoBinArgs) $(_unoRunArgs) --pathbase &quot;$(MSBuildProjectDirectory)\bin\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\dist&quot; --configuration $(Configuration) --targetframework $(TargetFramework) $(AdditionalRunArguments)</RunArguments>
   </PropertyGroup>
 
-  <!-- .NET 6.0 specific settings -->
-  <PropertyGroup Condition="'@BROWSERNETVERSION@' == '6.0'">
-    <!-- Preview features are required for generic attributes -->
-    <EnablePreviewFeatures>true</EnablePreviewFeatures>
-  </PropertyGroup>
-
 </Project>

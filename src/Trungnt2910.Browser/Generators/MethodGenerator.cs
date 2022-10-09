@@ -7,6 +7,6 @@
         /// <summary>
         /// {{Comments}}
         /// </summary>
-        public {{@@RETURNTYPE@@}} {{Name}}(@@PARAMETERS_WITH_TYPE@@) => {{@@RETURNTYPE@@}}.FromExpression($""{_jsThis}.{{JsName}}(@@PARAMETERS_TO_JS_OBJECT_STRING@@)"");
+        public {{@@RETURNTYPE@@}}? {{Name}}(@@PARAMETERS_WITH_TYPE@@) => {{@@RETURNTYPE@@}}.FromExpression($""{_jsThis}.{{JsName}}(@@PARAMETERS_TO_JS_OBJECT_STRING@@)"");
     "
 )]

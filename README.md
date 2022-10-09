@@ -24,9 +24,6 @@ Simply set your project's `TargetFramework` to `net6.0-browser`:
 
 In the future you might need to replace `6.0` with the .NET version you're using.
 
-**NET 6.0 Users**: Note that this workload internally enables preview features. Currently, the workload depends on [Generic Attributes](https://learn.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-11#generic-attributes).
-Builds may fail if you explicitly set `$(EnablePreviewFeatures)` to `false`.
-
 ## Sample project
 The repo includes a sample project that multi-targets Windows and Browser WebAssembly.
 

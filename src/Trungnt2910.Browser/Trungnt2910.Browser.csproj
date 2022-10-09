@@ -47,6 +47,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Trungnt2910.Browser.Generators\Trungnt2910.Browser.Generators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\Trungnt2910.Browser.PostProcessing\Trungnt2910.Browser.PostProcessing.csproj" ReferenceOutputAssembly="false" />
   </ItemGroup>
+
+  <UsingTask TaskName="Trungnt2910.Browser.PostProcessing.GeneratorCleanup" AssemblyFile="..\Trungnt2910.Browser.PostProcessing\bin\$(Configuration)\netstandard2.0\Trungnt2910.Browser.PostProcessing.dll" />
+
+  <Target Name="AssemblyPostProcessing" AfterTargets="Build">
+    <GeneratorCleanup AssemblyPath="$(OutputPath)\$(AssemblyName).dll" SnkPath="$(AssemblyOriginatorKeyFile)" />
+  </Target>
 
 </Project>

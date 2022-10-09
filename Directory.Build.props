@@ -1,7 +1,7 @@
 <Project>
   <PropertyGroup>
-    <_BrowserVersion>1.0</_BrowserVersion>
-    <_BrowserNetVersion>6.0</_BrowserNetVersion>
+    <_BrowserVersion Condition=" '$(_BrowserVersion)' == '' ">1.0</_BrowserVersion>
+    <_BrowserNetVersion Condition=" '$(_BrowserNetVersion)' == '' ">6.0</_BrowserNetVersion>
     <_BrowserTfm>net$(_BrowserNetVersion)-browser</_BrowserTfm>
     <_BrowserFullTfm>net$(_BrowserNetVersion)-browser$(_BrowserVersion)</_BrowserFullTfm>
     <_BrowserRootDirectory>$(MSBuildThisFileDirectory)</_BrowserRootDirectory>
