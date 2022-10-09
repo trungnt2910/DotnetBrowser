@@ -62,9 +62,12 @@
     <RuntimeIdentifier Condition=" '$(RuntimeIdentifier)' == '' and $([MSBuild]::IsOsPlatform('OSX')) and '$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)' == 'X64' ">osx-x64</RuntimeIdentifier>
   </PropertyGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition=" '$(OutputType)' == 'Exe' or '$(OutputType)' == 'WinExe' ">
     <PackageReference Include="Uno.Wasm.Bootstrap" Version="@BROWSERUNOBOOTSTRAPVERSION@" />
     <PackageReference Include="Uno.Wasm.Bootstrap.DevServer" Version="@BROWSERUNOBOOTSTRAPVERSION@" ExcludeAssets="build" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Uno.Foundation.Runtime.WebAssembly" Version="@BROWSERUNOFOUNDATIONVERSION@" />
   </ItemGroup>
 
