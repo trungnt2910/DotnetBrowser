@@ -57,6 +57,8 @@ internal sealed class JsObjectGenerator: GobieClassGenerator
             return obj;
         }
 
+        partial void FinalizerPartial();
+
         /// <inheritdoc/>
         ~{{ClassName}}()
         {
@@ -66,6 +68,8 @@ internal sealed class JsObjectGenerator: GobieClassGenerator
             {
                 _objectCache.Remove(JsHandle);
             }
+
+            FinalizerPartial();
         }
     ";
 }

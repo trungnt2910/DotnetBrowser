@@ -31,11 +31,41 @@ var Trungnt2910;
                     JsObject._freeIds.add(index);
                 }
             }
+            static SetupEventListener(index, type) {
+                let currentEventList = JsObject._objectsWithEvents.get(index);
+                if (currentEventList === undefined) {
+                    currentEventList = new Map();
+                    JsObject._objectsWithEvents.set(index, currentEventList);
+                }
+                if (!currentEventList.has(type)) {
+                    currentEventList.set(type, function (e) {
+                        JsObject.DispatchEvent(index, type, e);
+                    });
+                    JsObject.ReferencedObjects[index].addEventListener(type, currentEventList.get(type));
+                }
+            }
+            static CleanupEventListener(index, type) {
+                const currentEventList = JsObject._objectsWithEvents.get(index);
+                if (currentEventList !== undefined) {
+                    if (currentEventList.has(type)) {
+                        JsObject.ReferencedObjects[index].removeEventListener(type, currentEventList.get(type));
+                        currentEventList.delete(type);
+                    }
+                    if (currentEventList.size == 0) {
+                        JsObject._objectsWithEvents.delete(index);
+                    }
+                }
+            }
+            static DispatchEvent(index, type, event) {
+                JsObject._managedDispatchEvent = JsObject._managedDispatchEvent || BINDING.bind_static_method("[Trungnt2910.Browser] Trungnt2910.Browser.Dom.EventTarget:DispatchEvent");
+                JsObject._managedDispatchEvent(index, type, JsObject.ConstructObject(event));
+            }
         }
         JsObject.ReferencedObjects = [];
         JsObject._freeIds = new Set();
         JsObject._referenceCount = [];
         JsObject._referencedObjectsMap = new Map();
+        JsObject._objectsWithEvents = new Map();
         Browser.JsObject = JsObject;
     })(Browser = Trungnt2910.Browser || (Trungnt2910.Browser = {}));
 })(Trungnt2910 || (Trungnt2910 = {}));

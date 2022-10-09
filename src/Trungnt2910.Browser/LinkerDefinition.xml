@@ -6,5 +6,8 @@
 		<type fullname="Trungnt2910.Browser.Dom.*">
 			<method name="FromHandle" />
 		</type>
+		<type fullname="Trungnt2910.Browser.Dom.EventTarget">
+			<method name="DispatchEvent" />
+		</type>
     </assembly>
 </linker>
