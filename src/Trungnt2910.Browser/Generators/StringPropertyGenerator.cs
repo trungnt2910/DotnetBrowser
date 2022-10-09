@@ -21,7 +21,7 @@ internal sealed class StringPropertyGenerator : GobieClassGenerator
         public string? {{Name}}
         {
             get => global::Uno.Foundation.WebAssemblyRuntime.InvokeJS($""{_jsThis}.{{JsName}}"");
-            set => global::Uno.Foundation.WebAssemblyRuntime.InvokeJS($""{_jsThis}.{{JsName}} = { ((value == null) ? ""null"" : ""{(global::Uno.Foundation.WebAssemblyRuntime.EscapeJs(value))}"") } "");
+            set => global::Uno.Foundation.WebAssemblyRuntime.InvokeJS($""{_jsThis}.{{JsName}} = { ((value == null) ? ""null"" : $""\""{(global::Uno.Foundation.WebAssemblyRuntime.EscapeJs(value))}\"""") } "");
         }
     ";
 }
