@@ -23,3 +23,15 @@
         public void {{Name}}(@@PARAMETERS_WITH_TYPE@@) => global::Uno.Foundation.WebAssemblyRuntime.InvokeJS($""{_jsThis}.{{JsName}}(@@PARAMETERS_TO_JS_OBJECT_STRING@@)"");
     "
 )]
+
+[assembly: MethodGeneratorGenerator(
+    BaseName = "StringMethod",
+    MaxParams = 8,
+    IncludeReturnTypeParam = false,
+    Template = @"
+        /// <summary>
+        /// {{Comments}}
+        /// </summary>
+        public string {{Name}}(@@PARAMETERS_WITH_TYPE@@) => global::Uno.Foundation.WebAssemblyRuntime.InvokeJS($""{_jsThis}.{{JsName}}(@@PARAMETERS_TO_JS_OBJECT_STRING@@)"");
+    "
+)]

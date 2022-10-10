@@ -10,6 +10,9 @@ namespace Trungnt2910.Browser.Dom;
 [JsObjectReadOnlyProperty("defaultView", "DefaultView", nameof(Window), Comments = "Returns a reference to the <see cref=\"Window.Instance\"/> object.")]
 [JsObjectReadOnlyProperty("location", "Location", nameof(Location), Comments = "Returns the URI of the current document.")]
 [Method<Text, string>("createTextNode", "CreateTextNode", Param1 = "data", Comments = "Creates a text node.")]
+[Event<ClipboardEvent>("copy", "Copy", Comments = "The <see cref=\"Copy\"/> event fires when the user initiates a copy action through the browser's user interface.")]
+[Event<ClipboardEvent>("cut", "Cut", Comments = "The <see cref=\"Cut\"/> event fires when the user initiates a cut action through the browser's user interface.")]
+[Event<ClipboardEvent>("paste", "Paste", Comments = "The <see cref=\"Paste\"/> event fires when the user initiates a paste action through the browser's user interface.")]
 public partial class Document: Node
 {
 

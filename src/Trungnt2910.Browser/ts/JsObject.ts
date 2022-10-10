@@ -11,7 +11,7 @@ namespace Trungnt2910.Browser {
         private static readonly _objectsWithEvents = new Map<number, Map<string, EventListener>>();
         private static _managedDispatchEvent: (index: number, type: string, eventHandle: number) => void;
 
-        public static ConstructObject(obj: any): number {
+        public static ConstructObject(obj: any): number | null {
             if (JsObject._referencedObjectsMap.has(obj)) {
                 const index = JsObject._referencedObjectsMap.get(obj);
                 ++JsObject._referenceCount[index];
@@ -25,6 +25,10 @@ namespace Trungnt2910.Browser {
                 JsObject._referencedObjectsMap.set(obj, index);
                 JsObject._referenceCount[index] = 1;
                 return index;
+            }
+
+            if (!obj) {
+                return null;
             }
 
             JsObject.ReferencedObjects.push(obj);
