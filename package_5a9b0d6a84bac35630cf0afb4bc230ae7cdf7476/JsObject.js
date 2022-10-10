@@ -17,6 +17,9 @@ var Trungnt2910;
                     JsObject._referenceCount[index] = 1;
                     return index;
                 }
+                if (!obj) {
+                    return null;
+                }
                 JsObject.ReferencedObjects.push(obj);
                 const index = JsObject.ReferencedObjects.length - 1;
                 JsObject._referencedObjectsMap.set(obj, index);
