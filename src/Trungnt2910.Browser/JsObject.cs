@@ -70,6 +70,7 @@ public class JsObject : IConvertible
             }
             obj = new JsObject(objectHandle);
             _objectCache[objectHandle].SetTarget(obj);
+            return obj;
         }
         obj = new JsObject(objectHandle);
         _objectCache.Add(objectHandle, new WeakReference<JsObject>(obj));
@@ -408,7 +409,7 @@ public class JsObject : IConvertible
     {
         if (_objectCache.TryGetValue(JsHandle, out var reference) && 
             reference.TryGetTarget(out JsObject? obj) && 
-            obj == this)
+            ReferenceEquals(obj, this))
         {
             _objectCache.Remove(JsHandle);
         }

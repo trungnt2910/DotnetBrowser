@@ -51,6 +51,7 @@ internal sealed class JsObjectGenerator: GobieClassGenerator
                 }
                 obj = new {{ClassName}}(objectHandle);
                 _objectCache[objectHandle].SetTarget(obj);
+                return obj;
             }
             obj = new {{ClassName}}(objectHandle);
             _objectCache.Add(objectHandle, new global::System.WeakReference<{{ClassName}}>(obj));
@@ -64,7 +65,7 @@ internal sealed class JsObjectGenerator: GobieClassGenerator
         {
             if (_objectCache.TryGetValue(JsHandle, out var reference) && 
                 reference.TryGetTarget(out {{ClassName}}? obj) && 
-                obj == this)
+                ReferenceEquals(obj, this))
             {
                 _objectCache.Remove(JsHandle);
             }
