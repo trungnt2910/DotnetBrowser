@@ -9,23 +9,11 @@
     },
     {
       "behavior": "assembly",
-      "name": "System.Collections.Concurrent.dll"
-    },
-    {
-      "behavior": "assembly",
-      "name": "System.Collections.dll"
-    },
-    {
-      "behavior": "assembly",
       "name": "System.Console.dll"
     },
     {
       "behavior": "assembly",
       "name": "System.Linq.dll"
-    },
-    {
-      "behavior": "assembly",
-      "name": "System.Memory.dll"
     },
     {
       "behavior": "assembly",
@@ -42,14 +30,6 @@
     {
       "behavior": "assembly",
       "name": "System.Runtime.InteropServices.JavaScript.dll"
-    },
-    {
-      "behavior": "assembly",
-      "name": "System.Text.Encodings.Web.dll"
-    },
-    {
-      "behavior": "assembly",
-      "name": "System.Text.Json.dll"
     },
     {
       "behavior": "assembly",
