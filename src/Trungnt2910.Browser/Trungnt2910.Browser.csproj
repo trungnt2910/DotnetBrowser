@@ -5,8 +5,8 @@
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <EnablePreviewFeatures>True</EnablePreviewFeatures>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IsTrimmable>true</IsTrimmable>
     <!-- Ignore those spam warnings to filter out the real problems -->
     <!-- No matching param tag in XML comment; Cref attribute cannot be resolved; Referenced assembly does not have a strong name -->
     <NoWarn>CS1573;CS1574;CS8002</NoWarn>

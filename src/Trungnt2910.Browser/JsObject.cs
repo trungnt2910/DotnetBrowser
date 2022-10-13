@@ -7,7 +7,6 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.JavaScript;
 using System.Text;
-using System.Text.Json;
 using SystemJSObject = System.Runtime.InteropServices.JavaScript.JSObject;
 
 namespace Trungnt2910.Browser;
@@ -127,9 +126,6 @@ public partial class JsObject : IConvertible
         {
             case null:
                 return "null";
-            case string:
-            case char:
-                return $"\"{WebAssemblyRuntime.EscapeJs(obj.ToString()!)}\"";
             case sbyte:
             case byte:
             case short:
@@ -144,8 +140,14 @@ public partial class JsObject : IConvertible
                 return obj.ToString()!;
             case JsObject jsObj:
                 return jsObj._jsThis;
+            case SystemJSObject systemJSObject:
+                return FromSystemJSObject(systemJSObject)?._jsThis ?? "null";
+            case string:
+            case char:
             default:
-                return JsonSerializer.Serialize(obj);
+                return $"\"{WebAssemblyRuntime.EscapeJs(obj.ToString()!)}\"";
+                // For the default case, System.Text.Json used to be used,
+                // but it's now removed to make this library linker-friendly.
         }
     }
 
@@ -232,7 +234,7 @@ public partial class JsObject : IConvertible
     /// </summary>
     /// <typeparam name="T">Any type that derives from <see cref="JsObject"/>.</typeparam>
     /// <returns>A value of type <typeparamref name="T"/> that represents the same JavaScript object.</returns>
-    public T Cast<T>() where T : JsObject
+    public T Cast<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)] T>() where T : JsObject
     {
         var fromHandle = typeof(T).GetMethod(nameof(FromHandle), BindingFlags.Static | BindingFlags.Public);
         return (T)fromHandle!.Invoke(null, new object[] { JsHandle })!;
