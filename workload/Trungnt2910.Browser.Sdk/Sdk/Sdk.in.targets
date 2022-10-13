@@ -53,9 +53,20 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <!-- Must be self-contained. Framework-dependent builds cannot see our custom runtime -->
-    <SelfContained>true</SelfContained>
+    <_BrowserIsExe>false</_BrowserIsExe>
+    <_BrowserIsExe Condition="$(OutputType.Equals('exe', StringComparison.InvariantCultureIgnoreCase)) or $(OutputType.Equals('winexe', StringComparison.InvariantCultureIgnoreCase))">true</_BrowserIsExe>
     <RuntimeIdentifier>browser-wasm</RuntimeIdentifier>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(_BrowserIsExe)' == 'true'">
+    <!-- Must be self-contained. Framework-dependent builds cannot see our custom runtime. -->
+    <SelfContained>true</SelfContained>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(_BrowserIsExe)' == 'false'">
+    <!-- The WebAssembly workloads forcefully sets the <OutputType> to Exe. -->
+    <!-- https://github.com/dotnet/runtime/blob/main/src/mono/nuget/Microsoft.NET.Runtime.WebAssembly.Sdk/Sdk/Sdk.props#L6 -->
+    <UsingBrowserRuntimeWorkload>false</UsingBrowserRuntimeWorkload>
   </PropertyGroup>
 
   <PropertyGroup>
