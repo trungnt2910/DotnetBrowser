@@ -25,6 +25,7 @@ class TargetEnvironment
     static TargetEnvironment()
     {
         DotNetInstallPath = Environment.GetEnvironmentVariable("DOTNET_ROOT");
+
         if (DotNetInstallPath == null)
         {
             if (OperatingSystem.IsWindows())
@@ -68,7 +69,7 @@ class TargetEnvironment
         }
         else
         {
-            DotNetCliFeatureBand = dotnetVersion.Substring(0, DotNetCliFeatureBand.Length - 2) + "00";
+            DotNetCliFeatureBand = dotnetVersion.Substring(0, dotnetVersion.Length - 2) + "00";
             DotNetCliFeatureBandWithoutPreview = DotNetCliFeatureBand;
         }
 

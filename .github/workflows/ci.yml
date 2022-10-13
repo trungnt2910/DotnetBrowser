@@ -48,11 +48,14 @@ jobs:
     - name: Setup NuGet
       uses: NuGet/setup-nuget@v1.0.5
 
-    - name: Setup .NET 7 preview
-      run: |
-        Invoke-WebRequest 'https://dot.net/v1/dotnet-install.ps1' -OutFile 'dotnet-install.ps1'
-        ./dotnet-install.ps1 -Channel 7.0.1xx -Quality preview
-      shell: pwsh
+    - name: Setup .NET 7 SDK preview
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '7.0.x'
+        dotnet-quality: 'preview'
+
+    - name: Setup .NET WASM workload
+      run: dotnet workload install wasm-experimental
 
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v1.0.2
@@ -64,7 +67,7 @@ jobs:
       run: dotnet cake build.cake --target=InstallWorkload --configuration=$env:BUILD_CONFIG --build-version=${{ steps.gitversion.outputs.majorMinorPatch }} --package-version=${{ steps.gitversion.outputs.semVer }}
 
     - name: Build and publish sample app
-      run: dotnet publish sample/Trungnt2910.Browser.Sample/Trungnt2910.Browser.Sample.csproj --configuration $env:BUILD_CONFIG -p:Version=${{ steps.gitversion.outputs.assemblySemVer }} --framework=net6.0-browser
+      run: dotnet publish sample/Trungnt2910.Browser.Sample/Trungnt2910.Browser.Sample.csproj --configuration $env:BUILD_CONFIG -p:Version=${{ steps.gitversion.outputs.assemblySemVer }} --framework=net7.0-browser
 
     - name: Publish sample app artifact
       uses: actions/upload-artifact@v1

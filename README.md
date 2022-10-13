@@ -8,11 +8,12 @@ An attempt to create a .NET SDK workload that provides the `net7.0-browser` TFM.
 - Access JavaScript APIs (work in progress)
 
 ## How to install
-.NET SDK 7.0 or later is required.
+.NET SDK 7.0 or later is required, as well as the additional `wasm-experimental` workload.
 
 Use `cake` to build this project (on a privileged shell):
 
 ```
+dotnet workload install wasm-experimental
 dotnet tool restore
 dotnet cake build.cake --target=InstallWorkload
 ```
