@@ -41,6 +41,7 @@
 
   <ItemGroup>
     <Content Include="tsconfig.json" />
+    <Content Include="ts\**\*" />
   </ItemGroup>
 
   <ItemGroup>

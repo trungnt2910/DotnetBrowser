@@ -16,7 +16,7 @@ namespace Trungnt2910.Browser.Dom;
 public partial class EventTarget: JsObject
 {
     private const string _jsType = "Trungnt2910.Browser.JsObject";
-    private static readonly Dictionary<int, Dictionary<string, HashSet<EventHandler<Event>>>> _objectsWithEvents = new();
+    private static readonly Dictionary<EventTarget, Dictionary<string, HashSet<EventHandler<Event>>>> _objectsWithEvents = new();
 
     /// <summary>
     /// Registers an event handler of a specific event type on the <see cref="EventTarget"/>.
@@ -25,10 +25,10 @@ public partial class EventTarget: JsObject
     /// <param name="listener">The C# listener.</param>
     public void AddEventListener(string type, EventHandler<Event> listener)
     {
-        if (!_objectsWithEvents.TryGetValue(JsHandle, out var currentEventDict))
+        if (!_objectsWithEvents.TryGetValue(this, out var currentEventDict))
         {
             currentEventDict = new();
-            _objectsWithEvents.Add(JsHandle, currentEventDict);
+            _objectsWithEvents.Add(this, currentEventDict);
         }
 
         if (!currentEventDict.TryGetValue(type, out var currentEventTypeSet))
@@ -48,7 +48,7 @@ public partial class EventTarget: JsObject
     /// <param name="listener">The C# listener.</param>
     public void RemoveEventListener(string type, EventHandler<Event> listener)
     {
-        if (_objectsWithEvents.TryGetValue(JsHandle, out var currentEventDict))
+        if (_objectsWithEvents.TryGetValue(this, out var currentEventDict))
         {
             if (currentEventDict.TryGetValue(type, out var currentEventTypeSet))
             {
@@ -61,7 +61,7 @@ public partial class EventTarget: JsObject
             }
             if (currentEventDict.Count == 0)
             {
-                _objectsWithEvents.Remove(JsHandle);
+                _objectsWithEvents.Remove(this);
             }
         }
     }
@@ -75,26 +75,16 @@ public partial class EventTarget: JsObject
     [JSExport]
     internal static void DispatchEvent(int handle, string type, int eventArgsHandle)
     {
-        if (_objectsWithEvents.TryGetValue(handle, out var currentEventDict))
+        var sender = FromHandle(handle);
+        if (_objectsWithEvents.TryGetValue(sender, out var currentEventDict))
         {
             if (currentEventDict.TryGetValue(type, out var currentEventTypeSet))
             {
                 var eventArgs = Event.FromHandle(eventArgsHandle);
                 foreach (var listener in currentEventTypeSet)
                 {
-                    listener?.Invoke(FromHandle(handle), eventArgs);
+                    listener?.Invoke(sender, eventArgs);
                 }
-            }
-        }
-    }
-
-    partial void FinalizerPartial()
-    {
-        if (_objectsWithEvents.TryGetValue(JsHandle, out var currentEventDict))
-        {
-            foreach (var kvp in currentEventDict)
-            {
-                CleanupEventListener(JsHandle, kvp.Key);
             }
         }
     }

@@ -218,7 +218,7 @@ public partial class JsObject : IConvertible
     /// </summary>
     /// <typeparam name="T">Any type that derives from <see cref="JsObject"/>.</typeparam>
     /// <returns>A value of type <typeparamref name="T"/> that represents the same JavaScript object.</returns>
-    public T Cast<T>() where T: JsObject
+    public T Cast<T>() where T : JsObject
     {
         var fromHandle = typeof(T).GetMethod(nameof(FromHandle), BindingFlags.Static | BindingFlags.Public);
         return (T)fromHandle!.Invoke(null, new object[] { JsHandle })!;
@@ -439,6 +439,52 @@ public partial class JsObject : IConvertible
         }
     }
     #endregion
+
+    /// <summary>
+    /// Compares two JavaScript objects for reference equality.
+    /// </summary>
+    /// <param name="left">The first object.</param>
+    /// <param name="right">The second object.</param>
+    /// <returns><see langword="true"/> if the two objects refers to the same underlying JavaScript object.</returns>
+    public static bool operator ==(JsObject? left, JsObject? right)
+    {
+        return left?.JsHandle == right?.JsHandle;
+    }
+
+    /// <summary>
+    /// Checks if the two <see cref="JsObject"/> refers to different underlying JavaScript objects.
+    /// </summary>
+    /// <param name="left">The first object.</param>
+    /// <param name="right">The second object.</param>
+    /// <returns>The result of the comparision.</returns>
+    public static bool operator !=(JsObject? left, JsObject? right)
+    {
+        return !(left == right);
+    }
+
+    /// <summary>
+    /// Checks if the current <see cref="JsObject"/> is equal to <paramref name="obj"/>.
+    /// </summary>
+    /// <param name="obj">Any object.</param>
+    /// <returns><see langword="true"/> if <paramref name="obj"/> is an equivalent <see cref="JsObject"/> or <see cref="SystemJSObject"/>.</returns>
+    public override bool Equals(object? obj)
+    {
+        if (obj is JsObject jsObject)
+        {
+            return this == jsObject;
+        }
+        else if (obj is SystemJSObject systemJSObject)
+        {
+            return this == FromSystemJSObject(systemJSObject);
+        }
+        return false;
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return JsHandle;
+    }
 
     /// <summary>
     /// Finalizes the current managed object. This includes
