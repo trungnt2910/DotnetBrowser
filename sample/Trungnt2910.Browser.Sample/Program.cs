@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 #if BROWSER
+using System.Runtime.InteropServices.JavaScript;
 using Trungnt2910.Browser;
 using Trungnt2910.Browser.Dom;
 #elif WINDOWS
@@ -25,7 +26,7 @@ textNode.SelectStart += (sender, jsEvent) =>
 
     if (count > 10)
     {
-        Window.Instance.InvokeMember("alert", "Please stop selecting me.");
+        JsObject.FromSystemJSObject(JSHost.GlobalThis).InvokeMember("alert", "Please stop selecting me.");
     }
 
     if (count > 15)

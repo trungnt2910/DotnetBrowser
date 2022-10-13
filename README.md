@@ -37,11 +37,12 @@ Currently, only a small subset of this API is implemented. You can call the impl
 ```C#
 using Trungnt2910.Browser.Dom;
 
-// The global "window" object can be accessed using Window.Instance 
+// The global "window" object can be accessed using `Window.Instance`
 Console.WriteLine(Window.Instance.Location.Href);
 
 // Alternatively, you can use `Document.FromExpression("window.document")`,
 // or directly access `Window.Instance.Document`.
+// On .NET 7, you can also use `JsObject.FromSystemJSObject(JSHost.GlobalThis)`.
 var document = JsObject.FromExpression("window.document").Cast<Document>();
 
 // `createTextNode` is not implemented yet, so you must manually call the function.
