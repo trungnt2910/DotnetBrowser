@@ -1,5 +1,8 @@
 {
     "version": "@VERSION@",
+    "depends-on": {
+      "Microsoft.NET.Workload.Mono.ToolChain.net@BROWSERNETMAJORVERSION@": "@BROWSERMONOWASMVERSION@"
+    },
     "workloads": {
       "browser": {
         "description": ".NET SDK Workload for building Dotnet Browser applications.",
@@ -7,7 +10,9 @@
           "Trungnt2910.Browser.Sdk",
           "Trungnt2910.Browser.Ref",
           "Trungnt2910.Browser.Runtime"
-        ]
+        ],
+        "platforms": [ "win-x64", "linux-x64", "osx-x64", "osx-arm64" ],
+        "extends" : [ "wasm-experimental" ]
       }
     },
     "packs": {

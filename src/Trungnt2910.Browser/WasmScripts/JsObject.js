@@ -3,10 +3,9 @@ var Trungnt2910;
     var Browser;
     (function (Browser) {
         class JsObject {
-            static ConstructObject(obj) {
+            static CreateHandle(obj) {
                 if (JsObject._referencedObjectsMap.has(obj)) {
                     const index = JsObject._referencedObjectsMap.get(obj);
-                    ++JsObject._referenceCount[index];
                     return index;
                 }
                 if (JsObject._freeIds.size) {
@@ -14,7 +13,7 @@ var Trungnt2910;
                     JsObject._freeIds.delete(index);
                     JsObject.ReferencedObjects[index] = obj;
                     JsObject._referencedObjectsMap.set(obj, index);
-                    JsObject._referenceCount[index] = 1;
+                    JsObject._referenceCount[index] = 0;
                     return index;
                 }
                 if (!obj) {
@@ -23,10 +22,13 @@ var Trungnt2910;
                 JsObject.ReferencedObjects.push(obj);
                 const index = JsObject.ReferencedObjects.length - 1;
                 JsObject._referencedObjectsMap.set(obj, index);
-                JsObject._referenceCount.push(1);
+                JsObject._referenceCount.push(0);
                 return index;
             }
-            static DisposeObject(index) {
+            static IncrementReferenceCount(index) {
+                ++JsObject._referenceCount[index];
+            }
+            static DecrementReferenceCount(index) {
                 if ((--JsObject._referenceCount[index]) === 0) {
                     const oldObj = JsObject.ReferencedObjects[index];
                     delete JsObject.ReferencedObjects[index];
@@ -60,8 +62,8 @@ var Trungnt2910;
                 }
             }
             static DispatchEvent(index, type, event) {
-                JsObject._managedDispatchEvent = JsObject._managedDispatchEvent || BINDING.bind_static_method("[Trungnt2910.Browser] Trungnt2910.Browser.Dom.EventTarget:DispatchEvent");
-                JsObject._managedDispatchEvent(index, type, JsObject.ConstructObject(event));
+                JsObject._managedDispatchEvent = JsObject._managedDispatchEvent || getDotnetRuntime(0).BINDING.bind_static_method("[Trungnt2910.Browser] Trungnt2910.Browser.Dom.EventTarget:DispatchEvent");
+                JsObject._managedDispatchEvent(index, type, JsObject.CreateHandle(event));
             }
         }
         JsObject.ReferencedObjects = [];

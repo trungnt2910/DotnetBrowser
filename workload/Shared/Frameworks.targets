@@ -14,7 +14,7 @@
     <ItemGroup>
       <_RootAttribute Include="Name" Value="Dotnet Browser" />
       <_RootAttribute Include="TargetFrameworkIdentifier" Value=".NETCoreApp" />
-      <_RootAttribute Include="TargetFrameworkVersion" Value="6.0" />
+      <_RootAttribute Include="TargetFrameworkVersion" Value="$(_BrowserNetVersion)" />
       <_RootAttribute Include="FrameworkName" Value="$(MSBuildProjectName.Replace('.Ref','').Replace('.Runtime',''))" />
       <_AssemblyFiles Include="@(_PackageFiles)" Condition=" '%(_PackageFiles.Extension)' == '.dll' and '%(_PackageFiles.SubFolder)' == '' " />
       <_Classifications Include="@(_AssemblyFiles->'%(FileName)%(Extension)'->Distinct())" Profile="Browser" />
@@ -25,7 +25,7 @@
         Files="@(_AssemblyFiles)"
         FileClassifications="@(_Classifications)"
         TargetFile="%(_FrameworkListFile.Identity)"
-        TargetFilePrefixes="ref;lib"
+        TargetFilePrefixes="ref;runtimes/browser-wasm/lib"
         RootAttributes="@(_RootAttribute)"
     />
     <ItemGroup>

@@ -24,7 +24,7 @@ internal sealed class JsObjectPropertyGenerator : GobieClassGenerator
         public {{Type}}? {{Name}}
         {
             get => {{Type}}.FromExpression($""{_jsThis}.{{JsName}}"");
-            set => global::Uno.Foundation.WebAssemblyRuntime.InvokeJS($""{_jsThis}.{{JsName}} = {value?._jsThis ?? ""null""}"");
+            set => global::Trungnt2910.Browser.WebAssemblyRuntime.InvokeJS($""{_jsThis}.{{JsName}} = {value?._jsThis ?? ""null""}"");
         }
     ";
 }

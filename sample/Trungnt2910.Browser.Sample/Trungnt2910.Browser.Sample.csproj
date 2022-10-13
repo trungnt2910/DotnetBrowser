@@ -2,12 +2,12 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net6.0-browser;net6.0-windows</TargetFrameworks>
+    <TargetFrameworks>net7.0-browser;net7.0-windows</TargetFrameworks>
     <AppDesignerFolder>Properties</AppDesignerFolder>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Rickroller" Version="0.0.1-dev.0.1" />
+    <PackageReference Include="Rickroller" Version="0.0.1-dev.0.2" />
   </ItemGroup>
 
 </Project>

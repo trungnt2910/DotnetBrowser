@@ -23,8 +23,8 @@ internal sealed class NumericPropertyGenerator : GobieClassGenerator
         /// </summary>
         public {{Type}}? {{Name}}
         {
-            get => {{Type}}.Parse(global::Uno.Foundation.WebAssemblyRuntime.InvokeJS($""{_jsThis}.{{JsName}}""));
-            set => global::Uno.Foundation.WebAssemblyRuntime.InvokeJS($""{_jsThis}.{{JsName}} = {value}"");
+            get => global::Trungnt2910.Browser.WebAssemblyRuntime.{{Type}}OrNullFromJs($""{_jsThis}.{{JsName}}"");
+            set => global::Trungnt2910.Browser.WebAssemblyRuntime.InvokeJS($""{_jsThis}.{{JsName}} = {value}"");
         }
     ";
 }
@@ -48,6 +48,6 @@ internal sealed class NumericReadOnlyPropertyGenerator : GobieClassGenerator
         /// <summary>
         /// {{Comments}}
         /// </summary>
-        public {{Type}}? {{Name}} => {{Type}}.Parse(global::Uno.Foundation.WebAssemblyRuntime.InvokeJS($""{_jsThis}.{{JsName}}""));
+        public {{Type}}? {{Name}} => global::Trungnt2910.Browser.WebAssemblyRuntime.{{Type}}OrNullFromJs($""{_jsThis}.{{JsName}}"");
     ";
 }

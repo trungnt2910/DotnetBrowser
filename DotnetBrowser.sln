@@ -10,8 +10,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workload", "workload", "{3E
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{AF0C9862-1AB0-46F2-BB93-02353ACAB8E9}"
 	ProjectSection(SolutionItems) = preProject
+		build.cake = build.cake
 		Directory.Build.props = Directory.Build.props
 		DotnetBrowser.snk = DotnetBrowser.snk
+		global.json = global.json
 		nuget.config = nuget.config
 	EndProjectSection
 EndProject

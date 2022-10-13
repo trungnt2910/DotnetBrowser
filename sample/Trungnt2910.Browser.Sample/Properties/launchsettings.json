@@ -7,7 +7,6 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "applicationUrl": "http://localhost:5000;https://localhost:5001",
-      "commandLineArgs": "--framework net6.0-browser"
     }
   }
 }

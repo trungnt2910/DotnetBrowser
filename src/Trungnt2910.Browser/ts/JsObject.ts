@@ -1,6 +1,12 @@
-﻿declare var BINDING: {
+﻿declare interface Binding {
     bind_static_method<T>(name: string): T;
-};
+}
+
+declare interface DotnetRuntime {
+    BINDING: Binding
+}
+
+declare function getDotnetRuntime(index: number): DotnetRuntime;
 
 namespace Trungnt2910.Browser {
     export class JsObject {
@@ -11,10 +17,9 @@ namespace Trungnt2910.Browser {
         private static readonly _objectsWithEvents = new Map<number, Map<string, EventListener>>();
         private static _managedDispatchEvent: (index: number, type: string, eventHandle: number) => void;
 
-        public static ConstructObject(obj: any): number | null {
+        public static CreateHandle(obj: any): number | null {
             if (JsObject._referencedObjectsMap.has(obj)) {
                 const index = JsObject._referencedObjectsMap.get(obj);
-                ++JsObject._referenceCount[index];
                 return index;
             }
 
@@ -23,7 +28,7 @@ namespace Trungnt2910.Browser {
                 JsObject._freeIds.delete(index);
                 JsObject.ReferencedObjects[index] = obj;
                 JsObject._referencedObjectsMap.set(obj, index);
-                JsObject._referenceCount[index] = 1;
+                JsObject._referenceCount[index] = 0;
                 return index;
             }
 
@@ -34,11 +39,15 @@ namespace Trungnt2910.Browser {
             JsObject.ReferencedObjects.push(obj);
             const index = JsObject.ReferencedObjects.length - 1;
             JsObject._referencedObjectsMap.set(obj, index);
-            JsObject._referenceCount.push(1);
+            JsObject._referenceCount.push(0);
             return index;
         }
 
-        public static DisposeObject(index: number) {
+        public static IncrementReferenceCount(index: number) {
+            ++JsObject._referenceCount[index];
+        }
+
+        public static DecrementReferenceCount(index: number) {
             if ((--JsObject._referenceCount[index]) === 0) {
                 const oldObj = JsObject.ReferencedObjects[index];
                 delete JsObject.ReferencedObjects[index];
@@ -75,8 +84,8 @@ namespace Trungnt2910.Browser {
         }
 
         private static DispatchEvent(index: number, type: string, event: Event) {
-            JsObject._managedDispatchEvent = JsObject._managedDispatchEvent || BINDING.bind_static_method("[Trungnt2910.Browser] Trungnt2910.Browser.Dom.EventTarget:DispatchEvent");
-            JsObject._managedDispatchEvent(index, type, JsObject.ConstructObject(event));
+            JsObject._managedDispatchEvent = JsObject._managedDispatchEvent || getDotnetRuntime(0).BINDING.bind_static_method("[Trungnt2910.Browser] Trungnt2910.Browser.Dom.EventTarget:DispatchEvent");
+            JsObject._managedDispatchEvent(index, type, JsObject.CreateHandle(event));
         }
     }
 }
