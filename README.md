@@ -1,13 +1,15 @@
-# Dotnet Browser - custom TFM and workload for .NET 6
+# Dotnet Browser - custom TFM and workload for .NET 7
 
-An attempt to create a .NET SDK workload that provides the `net6.0-browser` TFM.
+An attempt to create a .NET SDK workload that provides the `net7.0-browser` TFM.
 
 ## Features
 - Run .NET applications in the browser.
-- Multi-target .NET applications and libraries with other platforms, using the browser-specific `net6.0-browser` TFM.
+- Multi-target .NET applications and libraries with other platforms, using the browser-specific `net7.0-browser` TFM.
 - Access JavaScript APIs (work in progress)
 
 ## How to install
+.NET SDK 7.0 or later is required.
+
 Use `cake` to build this project (on a privileged shell):
 
 ```
@@ -16,13 +18,13 @@ dotnet cake build.cake --target=InstallWorkload
 ```
 
 ## How to use in your projects
-Simply set your project's `TargetFramework` to `net6.0-browser`:
+Simply set your project's `TargetFramework` to `net7.0-browser`:
 
 ```xml
-    <TargetFramework>net6.0-browser</TargetFramework>
+    <TargetFramework>net7.0-browser</TargetFramework>
 ```
 
-In the future you might need to replace `6.0` with the .NET version you're using.
+In the future you might need to replace `7.0` with the .NET version you're using.
 
 ## Sample project
 The repo includes a sample project that multi-targets Windows and Browser WebAssembly.
@@ -56,7 +58,7 @@ document.Paste += (sender, clipboardEvent) =>
 
     if (!string.IsNullOrEmpty(text))
     {
-        Console.WriteLine($"Pasted string: \"{Uno.Foundation.WebAssemblyRuntime.EscapeJs(text)}\"");
+        Console.WriteLine($"Pasted string: {text}");
     }
     else
     {
@@ -71,8 +73,11 @@ Imagine the pain of building Uno Platform applications and/or libraries and then
 Using this project, a single multi-targeted project can be created:
 
 ```xml
-    <TargetFrameworks>net6.0-gtk;net6.0-browser;net6.0-windows7.0</TargetFrameworks>
+    <TargetFrameworks>net7.0-gtk;net7.0-browser;net7.0-windows7.0</TargetFrameworks>
 ```
+
+## What happened to `net6.0-browser`?
+.NET 6 support has been dropped after moving from Uno-based `Uno.Foundation.WebAssembly` to the official .NET `wasm-experimental` implementation, as `WebAssemblyRuntime` functions heavily depend on the new [`System.Runtime.InteropServices.JavaScript`](https://learn.microsoft.com/en-us/dotnet/api/system.runtime.interopservices.javascript?view=net-7.0&viewFallbackFrom=net-6.0) namespace, which is only available on .NET 7 or later versions.
 
 ## Plans
 - Implement all JavaScript Web API bindings on C#, either manually (easy but time consuming) or generated through TypeScript declarations (very challenging due to the numerous differences between C# and TypeScript).

@@ -9,7 +9,7 @@ var configuration = Argument("configuration", "Release");
 var target = Argument("target", "Default");
 
 var msbuildsettings = new DotNetMSBuildSettings();
-var supportedVersionBands = new List<string>() {"6.0.100", "6.0.200", "6.0.300", "6.0.400"};
+var supportedVersionBands = new List<string>() {"7.0.100-rc.2", "7.0.100"};
 
 const string manifestName = "Trungnt2910.NET.Sdk.Browser";
 var manifestPack = $"{manifestName}.Manifest-{TargetEnvironment.DotNetCliFeatureBand}.{packageVersion}.nupkg";

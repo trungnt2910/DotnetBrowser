@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Trungnt2910.Browser.Generators;
-using Uno.Foundation;
+using Trungnt2910.Browser;
+using System.Runtime.InteropServices.JavaScript;
 
 namespace Trungnt2910.Browser.Dom;
 
@@ -32,7 +33,7 @@ public partial class EventTarget: JsObject
 
         if (!currentEventDict.TryGetValue(type, out var currentEventTypeSet))
         {
-            SetupEventListener(type);
+            SetupEventListener(JsHandle, type);
             currentEventTypeSet = new();
             currentEventDict.Add(type, currentEventTypeSet);
         }
@@ -55,7 +56,7 @@ public partial class EventTarget: JsObject
                 if (currentEventTypeSet.Count == 0)
                 {
                     currentEventDict.Remove(type);
-                    CleanupEventListener(type);
+                    CleanupEventListener(JsHandle, type);
                 }
             }
             if (currentEventDict.Count == 0)
@@ -65,16 +66,13 @@ public partial class EventTarget: JsObject
         }
     }
 
-    private void SetupEventListener(string type)
-    {
-        WebAssemblyRuntime.InvokeJS($"{_jsType}.SetupEventListener({JsHandle}, \"{WebAssemblyRuntime.EscapeJs(type)}\")");
-    }
+    [JSImport($"globalThis.{_jsType}.{nameof(SetupEventListener)}")]
+    private static partial void SetupEventListener(int handle, string type);
 
-    private void CleanupEventListener(string type)
-    {
-        WebAssemblyRuntime.InvokeJS($"{_jsType}.CleanupEventListener({JsHandle}, \"{WebAssemblyRuntime.EscapeJs(type)}\")");
-    }
+    [JSImport($"globalThis.{_jsType}.{nameof(CleanupEventListener)}")]
+    private static partial void CleanupEventListener(int handle, string type);
 
+    [JSExport]
     internal static void DispatchEvent(int handle, string type, int eventArgsHandle)
     {
         if (_objectsWithEvents.TryGetValue(handle, out var currentEventDict))
@@ -96,7 +94,7 @@ public partial class EventTarget: JsObject
         {
             foreach (var kvp in currentEventDict)
             {
-                CleanupEventListener(kvp.Key);
+                CleanupEventListener(JsHandle, kvp.Key);
             }
         }
     }

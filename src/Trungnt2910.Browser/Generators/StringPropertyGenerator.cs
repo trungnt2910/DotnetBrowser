@@ -20,8 +20,8 @@ internal sealed class StringPropertyGenerator : GobieClassGenerator
         /// </summary>
         public string? {{Name}}
         {
-            get => global::Uno.Foundation.WebAssemblyRuntime.InvokeJS($""{_jsThis}.{{JsName}}"");
-            set => global::Uno.Foundation.WebAssemblyRuntime.InvokeJS($""{_jsThis}.{{JsName}} = { ((value == null) ? ""null"" : $""\""{(global::Uno.Foundation.WebAssemblyRuntime.EscapeJs(value))}\"""") } "");
+            get => global::Trungnt2910.Browser.WebAssemblyRuntime.StringOrNullFromJs($""{_jsThis}.{{JsName}}"");
+            set => global::Trungnt2910.Browser.WebAssemblyRuntime.InvokeJS($""{_jsThis}.{{JsName}} = { ((value == null) ? ""null"" : $""\""{(global::Trungnt2910.Browser.WebAssemblyRuntime.EscapeJs(value))}\"""") } "");
         }
     ";
 }
@@ -42,6 +42,6 @@ internal sealed class StringReadOnlyPropertyGenerator : GobieClassGenerator
         /// <summary>
         /// {{Comments}}
         /// </summary>
-        public string? {{Name}} => global::Uno.Foundation.WebAssemblyRuntime.InvokeJS($""{_jsThis}.{{JsName}}"");
+        public string? {{Name}} => global::Trungnt2910.Browser.WebAssemblyRuntime.StringOrNullFromJs($""{_jsThis}.{{JsName}}"");
     ";
 }

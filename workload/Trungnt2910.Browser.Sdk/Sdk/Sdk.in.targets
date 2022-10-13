@@ -29,7 +29,7 @@
       TargetingPackName="Trungnt2910.Browser.Ref"
       TargetingPackVersion="**FromWorkload**"
       RuntimePackNamePatterns="Trungnt2910.Browser.Runtime"
-      RuntimePackRuntimeIdentifiers="win-x64;win-x86;linux-x64;linux-x86;osx-x64"
+      RuntimePackRuntimeIdentifiers="browser-wasm"
       Profile="Browser"
     />
   </ItemGroup>
@@ -55,38 +55,54 @@
   <PropertyGroup>
     <!-- Must be self-contained. Framework-dependent builds cannot see our custom runtime -->
     <SelfContained>true</SelfContained>
-    <RuntimeIdentifier Condition=" '$(RuntimeIdentifier)' == '' and $([MSBuild]::IsOsPlatform('Windows')) and '$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)' == 'X64' ">win-x64</RuntimeIdentifier>
-    <RuntimeIdentifier Condition=" '$(RuntimeIdentifier)' == '' and $([MSBuild]::IsOsPlatform('Windows')) and '$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)' == 'X86' ">win-x86</RuntimeIdentifier>
-    <RuntimeIdentifier Condition=" '$(RuntimeIdentifier)' == '' and $([MSBuild]::IsOsPlatform('Linux')) and '$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)' == 'X64' ">linux-x64</RuntimeIdentifier>
-    <RuntimeIdentifier Condition=" '$(RuntimeIdentifier)' == '' and $([MSBuild]::IsOsPlatform('Linux')) and '$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)' == 'X86' ">linux-x86</RuntimeIdentifier>
-    <RuntimeIdentifier Condition=" '$(RuntimeIdentifier)' == '' and $([MSBuild]::IsOsPlatform('OSX')) and '$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)' == 'X64' ">osx-x64</RuntimeIdentifier>
+    <RuntimeIdentifier>browser-wasm</RuntimeIdentifier>
   </PropertyGroup>
 
-  <ItemGroup Condition=" '$(OutputType)' == 'Exe' or '$(OutputType)' == 'WinExe' ">
-    <PackageReference Include="Uno.Wasm.Bootstrap" Version="@BROWSERUNOBOOTSTRAPVERSION@" />
-    <PackageReference Include="Uno.Wasm.Bootstrap.DevServer" Version="@BROWSERUNOBOOTSTRAPVERSION@" ExcludeAssets="build" />
-  </ItemGroup>
+  <PropertyGroup>
+    <_WasmMainHTMLName>$([System.IO.Path]::GetFileName('$(WasmMainHTMLPath)'))</_WasmMainHTMLName>
+    <_WasmMainHTMLName Condition="'$(_WasmMainHTMLName)' == ''">index.html</_WasmMainHTMLName>  
+  </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Uno.Foundation.Runtime.WebAssembly" Version="@BROWSERUNOFOUNDATIONVERSION@" />
+    <HostConfig Include="browser" Host="browser" html-path="$(_WasmMainHTMLName)" />
   </ItemGroup>
 
-  <!-- Adapted from https://github.com/unoplatform/Uno.Wasm.Bootstrap/blob/main/src/Uno.Wasm.Bootstrap.DevServer/build/Uno.Wasm.Bootstrap.DevServer.targets -->
-  <!-- The original code does not honor the $(RuntimeIdentifier) value, making it unable to be run on this workload -->
-  <PropertyGroup>
-    <!-- Web Project Run Parameters -->
-    <RunCommand>dotnet</RunCommand>
+  <Target Name="_FixMicrosoftNetCoreAppRuntimePackDir" BeforeTargets="_InitializeCommonProperties">
+    <PropertyGroup>
+      <MicrosoftNetCoreAppRuntimePackDir Condition="'$(MicrosoftNetCoreAppRuntimePackDir)' == ''">$([MSBuild]::NormalizeDirectory(%(ResolvedRuntimePack.PackageDirectory), '..', '..', 'Microsoft.NETCore.App.Runtime.Mono.browser-wasm', '@BROWSERMONOWASMVERSION@'))</MicrosoftNetCoreAppRuntimePackDir>
+    </PropertyGroup>
+  </Target>
 
-    <!-- Nuget deployed run parameters -->
-    <_unoBinArgs>unowasm serve</_unoBinArgs>
+  <Target Name="_WasmGenerateMainJs"
+          Condition="'$(WasmGenerateAppBundle)' == 'true' and '$(WasmMainJSPath)' == ''"
+          BeforeTargets="_WasmGenerateAppBundle"
+          Outputs="$(IntermediateOutputPath)/main.js">
+    <PropertyGroup>
+      <_BrowserDefaultJs>
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
 
-    <_UnoDevServerBasePath Condition="'$(TargetFramework)'=='netstandard2.0'">netcoreapp3.1</_UnoDevServerBasePath>
-    <_UnoDevServerBasePath Condition="'$(TargetFramework.substring(0,3))'=='net' and '$(TargetFramework)'!='netstandard2.0'">net5</_UnoDevServerBasePath>
-    <_UnoDevServerBasePath Condition="'$([MSBuild]::GetTargetFrameworkVersion($(TargetFramework)))' &gt; 5">net6</_UnoDevServerBasePath>
+import { dotnet } from './dotnet.js'
 
-    <!-- Uno.Wasm.Bootstrap internal args -->
-    <_unoBinArgs>&quot;$(NuGetPackageRoot)/uno.wasm.bootstrap.devserver/@BROWSERUNOBOOTSTRAPVERSION@/tools/server/$(_UnoDevServerBasePath)/dotnet-unowasm.dll&quot; serve $(_unoRunArgs)</_unoBinArgs>
-    <RunArguments>$(_unoBinArgs) $(_unoRunArgs) --pathbase &quot;$(MSBuildProjectDirectory)\bin\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\dist&quot; --configuration $(Configuration) --targetframework $(TargetFramework) $(AdditionalRunArguments)</RunArguments>
-  </PropertyGroup>
+const is_browser = typeof window != &quot;undefined&quot;;
+if (!is_browser) throw new Error(`Expected to be running in a browser`);
+
+const runtime = await dotnet
+    .withDiagnosticTracing(false)
+    .withApplicationArgumentsFromQuery()
+    .create();
+
+const config = runtime.getConfig();
+await runtime.runMainAndExit(config.mainAssemblyName, []);
+      </_BrowserDefaultJs>
+    </PropertyGroup>
+    <WriteLinesToFile File="$(IntermediateOutputPath)/main.js" Lines="$(_BrowserDefaultJs)" Overwrite="true"/>
+    <PropertyGroup>
+      <WasmMainJSPath>$(IntermediateOutputPath)/main.js</WasmMainJSPath>
+    </PropertyGroup>
+    <ItemGroup>
+      <WasmExtraFilesToDeploy Include="$(WasmMainJSPath)" />
+    </ItemGroup>
+  </Target>
 
 </Project>

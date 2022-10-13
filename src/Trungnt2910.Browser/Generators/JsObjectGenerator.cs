@@ -26,7 +26,7 @@ internal sealed class JsObjectGenerator: GobieClassGenerator
         /// <returns>A <see cref=""{{ClassName}}""/> representing the expression's result, or <see langword=""null""/> if the expression evaluates to <c>null</c> or <c>undefined</c>.</returns>
         new public static {{ClassName}}? FromExpression(string jsExpression)
         {
-            var objectHandleString = global::Uno.Foundation.WebAssemblyRuntime.InvokeJS($""Trungnt2910.Browser.JsObject.ConstructObject({jsExpression})"");
+            var objectHandleString = global::Trungnt2910.Browser.WebAssemblyRuntime.InvokeJS($""Trungnt2910.Browser.JsObject.ConstructObject({jsExpression})"");
             if (objectHandleString == null)
             {
                 return null;

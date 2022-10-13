@@ -60,7 +60,7 @@ var Trungnt2910;
                 }
             }
             static DispatchEvent(index, type, event) {
-                JsObject._managedDispatchEvent = JsObject._managedDispatchEvent || BINDING.bind_static_method("[Trungnt2910.Browser] Trungnt2910.Browser.Dom.EventTarget:DispatchEvent");
+                JsObject._managedDispatchEvent = JsObject._managedDispatchEvent || getDotnetRuntime(0).BINDING.bind_static_method("[Trungnt2910.Browser] Trungnt2910.Browser.Dom.EventTarget:DispatchEvent");
                 JsObject._managedDispatchEvent(index, type, JsObject.ConstructObject(event));
             }
         }

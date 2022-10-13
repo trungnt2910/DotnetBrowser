@@ -1,6 +1,12 @@
-﻿declare var BINDING: {
+﻿declare interface Binding {
     bind_static_method<T>(name: string): T;
-};
+}
+
+declare interface DotnetRuntime {
+    BINDING: Binding
+}
+
+declare function getDotnetRuntime(index: number): DotnetRuntime;
 
 namespace Trungnt2910.Browser {
     export class JsObject {
@@ -75,7 +81,7 @@ namespace Trungnt2910.Browser {
         }
 
         private static DispatchEvent(index: number, type: string, event: Event) {
-            JsObject._managedDispatchEvent = JsObject._managedDispatchEvent || BINDING.bind_static_method("[Trungnt2910.Browser] Trungnt2910.Browser.Dom.EventTarget:DispatchEvent");
+            JsObject._managedDispatchEvent = JsObject._managedDispatchEvent || getDotnetRuntime(0).BINDING.bind_static_method("[Trungnt2910.Browser] Trungnt2910.Browser.Dom.EventTarget:DispatchEvent");
             JsObject._managedDispatchEvent(index, type, JsObject.ConstructObject(event));
         }
     }

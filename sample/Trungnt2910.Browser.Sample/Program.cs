@@ -42,7 +42,7 @@ document.Paste += (sender, clipboardEvent) =>
 
     if (!string.IsNullOrEmpty(text))
     {
-        Console.WriteLine($"Pasted string: \"{Uno.Foundation.WebAssemblyRuntime.EscapeJs(text)}\"");
+        Console.WriteLine($"Pasted string: {text}");
     }
     else
     {

@@ -48,10 +48,10 @@ jobs:
     - name: Setup NuGet
       uses: NuGet/setup-nuget@v1.0.5
 
-    - name: Setup .NET
+    - name: Setup .NET 7 preview
       run: |
         Invoke-WebRequest 'https://dot.net/v1/dotnet-install.ps1' -OutFile 'dotnet-install.ps1'
-        ./dotnet-install.ps1 -Channel Current
+        ./dotnet-install.ps1 -Channel 7.0.1xx -Quality preview
       shell: pwsh
 
     - name: Setup MSBuild
@@ -70,7 +70,7 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: sample_app
-        path: sample/Trungnt2910.Browser.Sample/bin/${{ env.BUILD_CONFIG }}/net6.0-browser/win-x64/publish
+        path: sample/Trungnt2910.Browser.Sample/bin/${{ env.BUILD_CONFIG }}/net7.0-browser/browser-wasm/AppBundle
 
     - name: Publish nuget artifacts
       uses: actions/upload-artifact@v2

@@ -3,7 +3,7 @@
   <Import Project="../Shared/Common.targets" />
 
   <PropertyGroup>
-    <Description>Dotnet Browser SDK. Enabled via the net6.0-browser TFM.</Description>
+    <Description>Dotnet Browser SDK. Enabled via the net7.0-browser TFM.</Description>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,9 +19,7 @@
 
     <ReplaceText Input="$(IntermediateOutputPath)Sdk.targets" Output="$(IntermediateOutputPath)Sdk.targets" OldValue="@BROWSERNETVERSION@" NewValue="$(_BrowserNetVersion)" />
 
-    <ReplaceText Input="$(IntermediateOutputPath)Sdk.targets" Output="$(IntermediateOutputPath)Sdk.targets" OldValue="@BROWSERUNOFOUNDATIONVERSION@" NewValue="$(_BrowserUnoFoundationVersion)" />
-
-    <ReplaceText Input="$(IntermediateOutputPath)Sdk.targets" Output="$(IntermediateOutputPath)Sdk.targets" OldValue="@BROWSERUNOBOOTSTRAPVERSION@" NewValue="$(_BrowserUnoBootstrapVersion)" />
+    <ReplaceText Input="$(IntermediateOutputPath)Sdk.targets" Output="$(IntermediateOutputPath)Sdk.targets" OldValue="@BROWSERMONOWASMVERSION@" NewValue="$(_BrowserMonoWasmVersion)" />
 
     <ItemGroup>
       <None Include="$(IntermediateOutputPath)Sdk.targets" Link="Sdk/Sdk.targets" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath="Sdk" Visible="false" />

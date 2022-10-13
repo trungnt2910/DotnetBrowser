@@ -3,7 +3,8 @@
   <PropertyGroup>
     <TargetFramework>net$(_BrowserNetVersion)</TargetFramework>
     <Nullable>enable</Nullable>
-    <LangVersion>preview</LangVersion>
+    <LangVersion>latest</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <EnablePreviewFeatures>True</EnablePreviewFeatures>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <!-- Ignore those spam warnings to filter out the real problems -->
@@ -18,21 +19,24 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.Versioning.SupportedOSPlatformAttribute">
+      <_Parameter1>browser</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.8.4">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Uno.Foundation.Runtime.WebAssembly" Version="$(_BrowserUnoFoundationVersion)" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="WasmScripts\**\*.js" />
+    <EmbeddedResource Include="WasmScripts\*.js">
+      <LogicalName>$(RootNamespace).%(Filename).js</LogicalName>
+    </EmbeddedResource>
     <UpToDateCheckInput Include="ts\**\*" />
     <UpToDateCheckInput Include="tsBindings\**\*" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="LinkerDefinition.xml" />
   </ItemGroup>
 
   <ItemGroup>

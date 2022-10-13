@@ -1,17 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices.JavaScript;
+using System.Text;
 using System.Text.Json;
-using Uno.Foundation;
+using SystemJSObject = System.Runtime.InteropServices.JavaScript.JSObject;
 
 namespace Trungnt2910.Browser;
 
 /// <summary>
 /// The base class of all marshalled JavaScript objects.
+/// Unlike <see cref="SystemJSObject"/>, this class is built with strong typing support in mind.
 /// </summary>
-public class JsObject : IConvertible
+public partial class JsObject : IConvertible
 {
     private const string _jsType = "Trungnt2910.Browser.JsObject";
     private static readonly Dictionary<int, WeakReference<JsObject>> _objectCache = new();
@@ -38,6 +43,28 @@ public class JsObject : IConvertible
         _jsThis = $"{_jsType}.ReferencedObjects[{JsHandle}]";
     }
 
+    [JSImport($"globalThis.{_jsType}.{nameof(ConstructObject)}")]
+    private static partial int? ConstructObject(SystemJSObject? jsObject);
+
+    /// <summary>
+    /// Creates a <see cref="JsObject"/> from a <see cref="SystemJSObject"/>.
+    /// </summary>
+    /// <param name="obj">The <see cref="SystemJSObject"/>.</param>
+    /// <returns>A <see cref="JsObject"/> representing an equivalent object, or <see langword="null"/> if the passed object is invalid.</returns>
+    public static JsObject? FromSystemJSObject(SystemJSObject obj)
+    {
+        if (obj.IsDisposed)
+        {
+            return null;
+        }
+        var objectHandle = ConstructObject(obj);
+        if (objectHandle == null)
+        {
+            return null;
+        }
+        return FromHandle(objectHandle.Value);
+    }
+
     /// <summary>
     /// Creates a <see cref="JsObject"/> from a raw JavaScript expression.
     /// </summary>
@@ -45,12 +72,15 @@ public class JsObject : IConvertible
     /// <returns>A <see cref="JsObject"/> representing the expression's result, or <see langword="null"/> if the expression evaluates to <c>null</c> or <c>undefined</c>.</returns>
     public static JsObject? FromExpression(string jsExpression)
     {
-        var objectHandleString = WebAssemblyRuntime.InvokeJS($"{_jsType}.ConstructObject({jsExpression})");
-        if (objectHandleString == null)
+        // TODO: Which one is faster? This?
+        // WebAssemblyRuntime.InvokeJS($"{_jsType}.ConstructObject({jsExpression})");
+        // or this?
+        var objectHandle = ConstructObject(WebAssemblyRuntime.ObjectOrNullFromJs(jsExpression));
+        if (objectHandle == null)
         {
             return null;
         }
-        return FromHandle(int.Parse(objectHandleString));
+        return FromHandle(objectHandle.Value);
     }
 
     /// <summary>
@@ -161,7 +191,7 @@ public class JsObject : IConvertible
     /// <returns>The underlying JavaScript object's type.</returns>
     public string GetJsType()
     {
-        return _type ??= WebAssemblyRuntime.InvokeJS($"typeof {_jsThis}");
+        return _type ??= WebAssemblyRuntime.StringFromJs($"typeof {_jsThis}");
     }
 
     /// <summary>
@@ -173,14 +203,14 @@ public class JsObject : IConvertible
     {
         if (GetJsType() == "string")
         {
-            return WebAssemblyRuntime.InvokeJS(_jsThis);
+            return WebAssemblyRuntime.StringFromJs(_jsThis);
         }
-        return WebAssemblyRuntime.InvokeJS($"JSON.stringify({_jsThis})");
+        return WebAssemblyRuntime.StringFromJs($"JSON.stringify({_jsThis})");
     }
 
     private string ToStringRaw()
     {
-        return WebAssemblyRuntime.InvokeJS(_jsThis);
+        return WebAssemblyRuntime.StringFromJs(_jsThis);
     }
 
     /// <summary>
@@ -192,6 +222,15 @@ public class JsObject : IConvertible
     {
         var fromHandle = typeof(T).GetMethod(nameof(FromHandle), BindingFlags.Static | BindingFlags.Public);
         return (T)fromHandle!.Invoke(null, new object[] { JsHandle })!;
+    }
+
+    /// <summary>
+    /// Converts a <see cref="JsObject"/> to a <see cref="SystemJSObject"/>
+    /// </summary>
+    /// <param name="obj">The <see cref="JsObject"/>.</param>
+    public static implicit operator SystemJSObject(JsObject obj)
+    {
+        return JSHost.GlobalThis.GetPropertyAsJSObject(obj._jsThis)!;
     }
 
     #region IConvertible
@@ -214,7 +253,7 @@ public class JsObject : IConvertible
     /// <inheritdoc/>
     public bool ToBoolean(IFormatProvider? provider)
     {
-        return bool.Parse(WebAssemblyRuntime.InvokeJS($"({_jsThis}) ? true : false"));
+        return WebAssemblyRuntime.BoolFromJs($"({_jsThis}) ? true : false");
     }
 
     /// <inheritdoc/>
@@ -414,5 +453,20 @@ public class JsObject : IConvertible
             _objectCache.Remove(JsHandle);
         }
         WebAssemblyRuntime.InvokeJS($"{_jsType}.DisposeObject({JsHandle})");
+    }
+
+    [SuppressMessage("Usage", "CA2255:The 'ModuleInitializer' attribute should not be used in libraries", Justification = "The JS code needs to be initialized early before any type loads.")]
+    [ModuleInitializer]
+    internal static void InitializeJavaScript()
+    {
+        using var resourceStream = Assembly.GetExecutingAssembly()
+            .GetManifestResourceStream(typeof(JsObject).FullName! + ".js")!;
+
+        var data = new byte[resourceStream.Length];
+        resourceStream.ReadExactly(data.AsSpan());
+
+        // We are declaring a few public classes so we want to explicitly use window.eval
+        // to make sure the JS runs in global scope.
+        WebAssemblyRuntime.InvokeJS($"window.eval(\"{WebAssemblyRuntime.EscapeJs(Encoding.UTF8.GetString(data))}\")");
     }
 }

@@ -20,7 +20,7 @@
         /// <summary>
         /// {{Comments}}
         /// </summary>
-        public void {{Name}}(@@PARAMETERS_WITH_TYPE@@) => global::Uno.Foundation.WebAssemblyRuntime.InvokeJS($""{_jsThis}.{{JsName}}(@@PARAMETERS_TO_JS_OBJECT_STRING@@)"");
+        public void {{Name}}(@@PARAMETERS_WITH_TYPE@@) => global::Trungnt2910.Browser.WebAssemblyRuntime.InvokeJS($""{_jsThis}.{{JsName}}(@@PARAMETERS_TO_JS_OBJECT_STRING@@)"");
     "
 )]
 
@@ -32,6 +32,6 @@
         /// <summary>
         /// {{Comments}}
         /// </summary>
-        public string {{Name}}(@@PARAMETERS_WITH_TYPE@@) => global::Uno.Foundation.WebAssemblyRuntime.InvokeJS($""{_jsThis}.{{JsName}}(@@PARAMETERS_TO_JS_OBJECT_STRING@@)"");
+        public string? {{Name}}(@@PARAMETERS_WITH_TYPE@@) => global::Trungnt2910.Browser.WebAssemblyRuntime.StringOrNullFromJs($""{_jsThis}.{{JsName}}(@@PARAMETERS_TO_JS_OBJECT_STRING@@)"");
     "
 )]

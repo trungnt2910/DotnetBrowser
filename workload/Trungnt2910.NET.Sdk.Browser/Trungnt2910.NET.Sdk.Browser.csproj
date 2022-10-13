@@ -21,12 +21,26 @@
       BeforeTargets="Build;AssignTargetPaths"
       Inputs="$(MSBuildProjectFile);WorkloadManifest.in.json"
       Outputs="$(IntermediateOutputPath)WorkloadManifest.json">
-    
+
     <ReplaceText
         Input="WorkloadManifest.in.json"
         Output="$(IntermediateOutputPath)WorkloadManifest.json"
         OldValue="@VERSION@"
         NewValue="$(PackageVersion)"
+    />
+
+    <ReplaceText
+        Input="$(IntermediateOutputPath)WorkloadManifest.json"
+        Output="$(IntermediateOutputPath)WorkloadManifest.json"
+        OldValue="@BROWSERNETMAJORVERSION@"
+        NewValue="$([System.Version]::Parse($(_BrowserNetVersion)).ToString(1))"
+    />
+
+    <ReplaceText
+        Input="$(IntermediateOutputPath)WorkloadManifest.json"
+        Output="$(IntermediateOutputPath)WorkloadManifest.json"
+        OldValue="@BROWSERMONOWASMVERSION@"
+        NewValue="$(_BrowserMonoWasmVersion)"
     />
 
     <ItemGroup>
@@ -39,7 +53,7 @@
       />
       <FileWrites Include="$(IntermediateOutputPath)WorkloadManifest.json" />
     </ItemGroup>
-  
+
   </Target>
 
 </Project>

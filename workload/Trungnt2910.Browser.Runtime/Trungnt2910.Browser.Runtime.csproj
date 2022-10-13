@@ -10,8 +10,8 @@
   <ItemGroup>
     <None Include="$(_BrowserRootDirectory)src/Trungnt2910.Browser/bin/$(Configuration)/net$(_BrowserNetVersion)/Trungnt2910.Browser.dll" />
     <None Include="$(_BrowserRootDirectory)src/Trungnt2910.Browser/bin/$(Configuration)/net$(_BrowserNetVersion)/Trungnt2910.Browser.pdb" />
-    <None Update="@(None)" CopyToOutputDirectory="PreserveNewest" Visible="false" Link="lib/$(_BrowserFullTfm)/%(FileName)%(Extension)" />
-    <_PackageFiles Include="@(None)" PackagePath="lib/$(_BrowserFullTfm)" TargetPath="lib/$(_BrowserFullTfm)" />
+    <None Update="@(None)" CopyToOutputDirectory="PreserveNewest" Visible="false" Link="runtimes/browser-wasm/lib/net$(_BrowserNetVersion)/%(FileName)%(Extension)" />
+    <_PackageFiles Include="@(None)" PackagePath="runtimes/browser-wasm/lib/net$(_BrowserNetVersion)" TargetPath="runtimes/browser-wasm/lib/net$(_BrowserNetVersion)" />
   </ItemGroup>
 
   <ItemGroup>

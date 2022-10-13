@@ -20,6 +20,7 @@ class TargetEnvironment
 
     public static string DotNetCliPath { get; private set; }
     public static string DotNetCliFeatureBand { get; private set; }
+    public static string DotNetCliFeatureBandWithoutPreview { get; private set; }
 
     static TargetEnvironment()
     {
@@ -51,11 +52,30 @@ class TargetEnvironment
 
         proc.WaitForExit();
 
-        DotNetCliFeatureBand = proc.StandardOutput.ReadToEnd().Trim();
-        DotNetCliFeatureBand = DotNetCliFeatureBand.Substring(0, DotNetCliFeatureBand.Length - 2) + "00";
+        var dotnetVersion = proc.StandardOutput.ReadToEnd().Trim();
+        var prereleaseStart = dotnetVersion.IndexOf('-');
 
-        DotNetInstalledWorkloadsMetadataPath = P.Combine(DotNetInstallPath, "metadata", "workloads", DotNetCliFeatureBand, "InstalledWorkloads");
-        DotNetInstallerTypeMetadataPath = P.Combine(DotNetInstallPath, "metadata", "workloads", DotNetCliFeatureBand, "InstallerType");
+        if (prereleaseStart != -1)
+        {
+            var firstDot = dotnetVersion.IndexOf('.', prereleaseStart);
+            var secondDot = dotnetVersion.IndexOf('.', firstDot + 1);
+            if (secondDot == -1)
+            {
+                secondDot = dotnetVersion.Length;
+            }
+            DotNetCliFeatureBand = dotnetVersion.Substring(0, secondDot);
+            DotNetCliFeatureBandWithoutPreview = dotnetVersion.Substring(0, prereleaseStart);
+        }
+        else
+        {
+            DotNetCliFeatureBand = dotnetVersion.Substring(0, DotNetCliFeatureBand.Length - 2) + "00";
+            DotNetCliFeatureBandWithoutPreview = DotNetCliFeatureBand;
+        }
+
+        // Featured version band for metadata does NOT include any preview specifier.
+        // See https://github.com/dotnet/sdk/blob/main/documentation/general/workloads/user-local-workloads.md
+        DotNetInstalledWorkloadsMetadataPath = P.Combine(DotNetInstallPath, "metadata", "workloads", DotNetCliFeatureBandWithoutPreview, "InstalledWorkloads");
+        DotNetInstallerTypeMetadataPath = P.Combine(DotNetInstallPath, "metadata", "workloads", DotNetCliFeatureBandWithoutPreview, "InstallerType");
         DotNetManifestPath = P.Combine(DotNetInstallPath, "sdk-manifests", DotNetCliFeatureBand);
         DotNetPacksPath = P.Combine(DotNetInstallPath, "packs");
         DotNetTemplatePacksPath = P.Combine(DotNetInstallPath, "template-packs");
