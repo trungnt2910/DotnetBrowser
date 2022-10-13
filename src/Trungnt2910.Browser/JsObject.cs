@@ -40,11 +40,25 @@ public partial class JsObject : IConvertible
     protected JsObject(int handle)
     {
         JsHandle = handle;
+        IncrementReferenceCount(handle);
         _jsThis = $"{_jsType}.ReferencedObjects[{JsHandle}]";
     }
 
-    [JSImport($"globalThis.{_jsType}.{nameof(ConstructObject)}")]
-    private static partial int? ConstructObject(SystemJSObject? jsObject);
+    [JSImport($"globalThis.{_jsType}.{nameof(IncrementReferenceCount)}")]
+    private static partial void IncrementReferenceCount(int index);
+
+    [JSImport($"globalThis.{_jsType}.{nameof(DecrementReferenceCount)}")]
+    private static partial void DecrementReferenceCount(int index);
+
+    /// <summary>
+    /// Creates an internal handle for <paramref name="jsObject"/>.
+    /// </summary>
+    /// <param name="jsObject">The JavaScript object.</param>
+    /// <returns>A handle for the object, or <see langword="null"/> if the object is null or undefined.</returns>
+    /// <remarks>This method exists for code generators only. Do not call it directly. Use <see cref="FromSystemJSObject"/> or <see cref="FromExpression"/> instead to create a <see cref="JsObject"/>.</remarks>
+    [JSImport($"globalThis.{_jsType}.{nameof(CreateHandle)}")]
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public static partial int? CreateHandle(SystemJSObject? jsObject);
 
     /// <summary>
     /// Creates a <see cref="JsObject"/> from a <see cref="SystemJSObject"/>.
@@ -57,7 +71,7 @@ public partial class JsObject : IConvertible
         {
             return null;
         }
-        var objectHandle = ConstructObject(obj);
+        var objectHandle = CreateHandle(obj);
         if (objectHandle == null)
         {
             return null;
@@ -75,7 +89,7 @@ public partial class JsObject : IConvertible
         // TODO: Which one is faster? This?
         // WebAssemblyRuntime.InvokeJS($"{_jsType}.ConstructObject({jsExpression})");
         // or this?
-        var objectHandle = ConstructObject(WebAssemblyRuntime.ObjectOrNullFromJs(jsExpression));
+        var objectHandle = CreateHandle(WebAssemblyRuntime.ObjectOrNullFromJs(jsExpression));
         if (objectHandle == null)
         {
             return null;
@@ -92,14 +106,14 @@ public partial class JsObject : IConvertible
     public static JsObject FromHandle(int objectHandle)
     {
         JsObject? obj;
-        if (_objectCache.ContainsKey(objectHandle))
+        if (_objectCache.TryGetValue(objectHandle, out WeakReference<JsObject>? weakReference))
         {
             if (_objectCache[objectHandle].TryGetTarget(out obj))
             {
                 return obj;
             }
             obj = new JsObject(objectHandle);
-            _objectCache[objectHandle].SetTarget(obj);
+            weakReference.SetTarget(obj);
             return obj;
         }
         obj = new JsObject(objectHandle);
@@ -498,7 +512,7 @@ public partial class JsObject : IConvertible
         {
             _objectCache.Remove(JsHandle);
         }
-        WebAssemblyRuntime.InvokeJS($"{_jsType}.DisposeObject({JsHandle})");
+        DecrementReferenceCount(JsHandle);
     }
 
     [SuppressMessage("Usage", "CA2255:The 'ModuleInitializer' attribute should not be used in libraries", Justification = "The JS code needs to be initialized early before any type loads.")]

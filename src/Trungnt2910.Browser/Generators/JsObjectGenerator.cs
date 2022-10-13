@@ -20,18 +20,40 @@ internal sealed class JsObjectGenerator: GobieClassGenerator
         protected {{ClassName}}(int handle) : base(handle) {}
 
         /// <summary>
+        /// Creates a <see cref=""{{ClassName}}""/> from a <see cref=""global::System.Runtime.InteropServices.JavaScript.JSObject""/>.
+        /// </summary>
+        /// <param name=""obj"">The <see cref=""global::System.Runtime.InteropServices.JavaScript.JSObject""/>.</param>
+        /// <returns>A <see cref=""{{ClassName}}""/> representing an equivalent object, or <see langword=""null""/> if the passed object is invalid.</returns>
+        new public static {{ClassName}}? FromSystemJSObject(global::System.Runtime.InteropServices.JavaScript.JSObject obj)
+        {
+            if (obj.IsDisposed)
+            {
+                return null;
+            }
+            var objectHandle = global::Trungnt2910.Browser.JsObject.CreateHandle(obj);
+            if (objectHandle == null)
+            {
+                return null;
+            }
+            return FromHandle(objectHandle.Value);
+        }
+
+        /// <summary>
         /// Creates a <see cref=""{{ClassName}}""/> from a raw JavaScript expression.
         /// </summary>
         /// <param name=""jsExpression"">The JavaScript expression as a <see langword=""string""/>.</param>
         /// <returns>A <see cref=""{{ClassName}}""/> representing the expression's result, or <see langword=""null""/> if the expression evaluates to <c>null</c> or <c>undefined</c>.</returns>
         new public static {{ClassName}}? FromExpression(string jsExpression)
         {
-            var objectHandleString = global::Trungnt2910.Browser.WebAssemblyRuntime.InvokeJS($""Trungnt2910.Browser.JsObject.ConstructObject({jsExpression})"");
-            if (objectHandleString == null)
+            // TODO: Which one is faster? This?
+            // WebAssemblyRuntime.InvokeJS($""{_jsType}.ConstructObject({jsExpression})"");
+            // or this?
+            var objectHandle = global::Trungnt2910.Browser.JsObject.CreateHandle(global::Trungnt2910.Browser.WebAssemblyRuntime.ObjectOrNullFromJs(jsExpression));
+            if (objectHandle == null)
             {
                 return null;
             }
-            return FromHandle(int.Parse(objectHandleString));
+            return FromHandle(objectHandle.Value);
         }
 
         /// <summary>
@@ -39,18 +61,18 @@ internal sealed class JsObjectGenerator: GobieClassGenerator
         /// </summary>
         /// <param name=""objectHandle"">The JavaScript handle.</param>
         /// <returns>A <see cref=""{{ClassName}}""/> or <see langword=""null""/> if the handle is invalid.</returns>
-        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
         new public static {{ClassName}} FromHandle(int objectHandle)
         {
             {{ClassName}}? obj;
-            if (_objectCache.ContainsKey(objectHandle))
+            if (_objectCache.TryGetValue(objectHandle, out var weakReference))
             {
                 if (_objectCache[objectHandle].TryGetTarget(out obj))
                 {
                     return obj;
                 }
                 obj = new {{ClassName}}(objectHandle);
-                _objectCache[objectHandle].SetTarget(obj);
+                weakReference.SetTarget(obj);
                 return obj;
             }
             obj = new {{ClassName}}(objectHandle);
