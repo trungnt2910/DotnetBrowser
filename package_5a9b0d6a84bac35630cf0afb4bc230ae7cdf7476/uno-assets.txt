@@ -1,2 +1,0 @@
-obj/uno-bootstrap.d.ts
-obj/uno-bootstrap.js
