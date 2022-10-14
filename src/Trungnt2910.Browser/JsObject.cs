@@ -120,7 +120,14 @@ public partial class JsObject : IConvertible
         return obj;
     }
 
-    internal static string ToJsObjectString(object? obj)
+    /// <summary>
+    /// Returns the equivalent JavaScript representation of an object.
+    /// </summary>
+    /// <param name="obj">The managed object.</param>
+    /// <returns>The JavaScript representation.</returns>
+    /// <remarks>This method exists for code generators only. Do not use this method directly.</remarks>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public static string ToJsObjectString(object? obj)
     {
         switch (obj)
         {
@@ -184,7 +191,7 @@ public partial class JsObject : IConvertible
     /// <returns>A <see cref="JsObject"/> representing the function's result, or <see langword="null"/> if the function evaluates to <c>null</c> or <c>undefined</c>.</returns>
     public JsObject? InvokeMember(string index, params object?[]? args)
     {
-        var argsStringList = args?.Select(a => ToJsObjectString(a));
+        var argsStringList = args?.Select(ToJsObjectString);
         return FromExpression($"{_jsThis}[\"{WebAssemblyRuntime.EscapeJs(index)}\"]({string.Join(",", argsStringList ?? Array.Empty<string>())})");
     }
 

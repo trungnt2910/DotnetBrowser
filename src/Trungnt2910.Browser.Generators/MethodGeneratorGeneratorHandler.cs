@@ -19,12 +19,21 @@ internal class MethodGeneratorGeneratorHandler : IHandler
         }
 
         var includeReturnTypeParamArg = attribute.ArgumentList?.Arguments
-            .Single(a => a.NameEquals?.Name.ToString() == nameof(MethodGeneratorGeneratorAttribute.IncludeReturnTypeParam))
+            .SingleOrDefault(a => a.NameEquals?.Name.ToString() == nameof(MethodGeneratorGeneratorAttribute.IncludeReturnTypeParam))
             ?.Expression;
 
         if (!bool.TryParse(includeReturnTypeParamArg?.ToString(), out var includeReturnTypeParam))
         {
             includeReturnTypeParam = MethodGeneratorGeneratorAttribute.DefaultIncludeReturnTypeParam;
+        }
+
+        var includeRestTypeParamArg = attribute.ArgumentList?.Arguments
+            .SingleOrDefault(a => a.NameEquals?.Name.ToString() == nameof(MethodGeneratorGeneratorAttribute.IncludeRestTypeParam))
+            ?.Expression;
+
+        if (!bool.TryParse(includeRestTypeParamArg?.ToString(), out var includeRestTypeParam))
+        {
+            includeRestTypeParam = MethodGeneratorGeneratorAttribute.DefaultIncludeRestTypeParam;
         }
 
         var baseNameArg = attribute.ArgumentList?.Arguments
@@ -43,7 +52,7 @@ internal class MethodGeneratorGeneratorHandler : IHandler
 
         for (int i = 0; i < maxParams; ++i)
         {
-            sb.AppendLine(Build(baseName, template, includeReturnTypeParam, i));
+            sb.AppendLine(Build(baseName, template, includeReturnTypeParam, includeRestTypeParam, i));
         }
 
         var content = sb.ToString();
@@ -53,15 +62,18 @@ internal class MethodGeneratorGeneratorHandler : IHandler
             .Cast<ClassDeclarationSyntax>();
     }
 
-    private string Build(string baseName, string template, bool includeReturnTypeParam, int paramCount)
+    private string Build(string baseName, string template, bool includeReturnTypeParam, bool includeRestTypeParam, int paramCount)
     {
         var sb = new StringBuilder();
         var returnTypeArr = includeReturnTypeParam ? new[] { "TReturn" } : Array.Empty<string>();
-        var typeArguments = string.Join(",", returnTypeArr.Concat(Enumerable.Range(1, paramCount).Select(i => $"T{i}")));
+        var restTypeArr = includeRestTypeParam ? new[] { "TRest" } : Array.Empty<string>();
+        var typeArguments = string.Join(",", returnTypeArr.Concat(Enumerable.Range(1, paramCount).Select(i => $"T{i}")).Concat(restTypeArr));
 
         var processedTemplate = template
             .Replace("@@RETURNTYPE@@", "TReturn")
-            .Replace("@@PARAMETERS_WITH_TYPE@@", string.Join(",", Enumerable.Range(1, paramCount).Select(i => $"{{{{T{i}}}}} {{{{Param{i}}}}}")))
+            .Replace("@@RESTTYPE@@", "TRest")
+            .Replace("@@PARAMETERS@@", string.Join(",", Enumerable.Range(1, paramCount).Select(i => $"{{{{Param{i}}}}}")))
+            .Replace("@@PARAMETERS_WITH_TYPE@@", string.Join(",", Enumerable.Range(1, paramCount).Select(i => $"{{{{T{i}}}}}? {{{{Param{i}}}}}").Concat(restTypeArr.Select(t => $"params {{{{{t}}}}}?[]? args"))))
             .Replace("@@PARAMETERS_TO_JS_OBJECT_STRING@@", string.Join(", ", Enumerable.Range(1, paramCount).Select(i => $"{{(global::Trungnt2910.Browser.JsObject.ToJsObjectString({{{{Param{i}}}}}))}}")));
 
         bool hasTypeArguments = typeArguments.Any();
