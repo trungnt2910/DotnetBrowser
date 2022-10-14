@@ -86,9 +86,12 @@ public partial class JsObject : IConvertible
     public static JsObject? FromExpression(string jsExpression)
     {
         // TODO: Which one is faster? This?
-        // WebAssemblyRuntime.InvokeJS($"{_jsType}.ConstructObject({jsExpression})");
+        var objectHandle = WebAssemblyRuntime.IntOrNullFromJs($"{_jsType}.CreateHandle({jsExpression})");
         // or this?
-        var objectHandle = CreateHandle(WebAssemblyRuntime.ObjectOrNullFromJs(jsExpression));
+        // using var systemObj = WebAssemblyRuntime.ObjectOrNullFromJs(jsExpression);
+        // var objectHandle = CreateHandle(systemObj);
+        // Currently we're choosing the first method. The second method pollutes the JavaScript object with a
+        // custom handle property, even after the managed object is disposed.
         if (objectHandle == null)
         {
             return null;

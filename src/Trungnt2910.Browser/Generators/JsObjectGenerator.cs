@@ -46,9 +46,12 @@ internal sealed class JsObjectGenerator: GobieClassGenerator
         new public static {{ClassName}}? FromExpression(string jsExpression)
         {
             // TODO: Which one is faster? This?
-            // WebAssemblyRuntime.InvokeJS($""{_jsType}.ConstructObject({jsExpression})"");
+            var objectHandle = global::Trungnt2910.Browser.WebAssemblyRuntime.IntOrNullFromJs($""Trungnt2910.Browser.JsObject.CreateHandle({jsExpression})"");
             // or this?
-            var objectHandle = global::Trungnt2910.Browser.JsObject.CreateHandle(global::Trungnt2910.Browser.WebAssemblyRuntime.ObjectOrNullFromJs(jsExpression));
+            // using var systemObj = global::Trungnt2910.Browser.WebAssemblyRuntime.ObjectOrNullFromJs(jsExpression);
+            // var objectHandle = global::Trungnt2910.Browser.JsObject.CreateHandle(systemObj);
+            // Currently we're choosing the first method. The second method pollutes the JavaScript object with a
+            // custom handle property, even after the managed object is disposed.
             if (objectHandle == null)
             {
                 return null;
