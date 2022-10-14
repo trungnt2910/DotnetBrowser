@@ -10,20 +10,20 @@ internal sealed class JsObjectGenerator: GobieClassGenerator
         private static readonly global::System.Collections.Generic.Dictionary<int, global::System.WeakReference<{{ClassName}}>> _objectCache = new();
 
         /// <summary>
-        /// Constructs a <see cref=""{{ClassName}}""/> from a JavaScript handle.
+        /// Constructs a <see cref=""{{ClassNameWithoutGenericParameters}}""/> from a JavaScript handle.
         /// </summary>
         /// <param name=""handle"">The JavaScript handle</param>
         /// <remarks>
         /// This constructor is for internal purposes only. The preferred way of getting
         /// an object from a handle is <see cref=""FromHandle(int)""/>
         /// </remarks>
-        protected {{ClassName}}(int handle) : base(handle) {}
+        protected {{ClassNameWithoutGenericParameters}}(int handle) : base(handle) {}
 
         /// <summary>
-        /// Creates a <see cref=""{{ClassName}}""/> from a <see cref=""global::System.Runtime.InteropServices.JavaScript.JSObject""/>.
+        /// Creates a <see cref=""{{ClassNameWithoutGenericParameters}}""/> from a <see cref=""global::System.Runtime.InteropServices.JavaScript.JSObject""/>.
         /// </summary>
         /// <param name=""obj"">The <see cref=""global::System.Runtime.InteropServices.JavaScript.JSObject""/>.</param>
-        /// <returns>A <see cref=""{{ClassName}}""/> representing an equivalent object, or <see langword=""null""/> if the passed object is invalid.</returns>
+        /// <returns>A <see cref=""{{ClassNameWithoutGenericParameters}}""/> representing an equivalent object, or <see langword=""null""/> if the passed object is invalid.</returns>
         new public static {{ClassName}}? FromSystemJSObject(global::System.Runtime.InteropServices.JavaScript.JSObject obj)
         {
             if (obj.IsDisposed)
@@ -39,10 +39,10 @@ internal sealed class JsObjectGenerator: GobieClassGenerator
         }
 
         /// <summary>
-        /// Creates a <see cref=""{{ClassName}}""/> from a raw JavaScript expression.
+        /// Creates a <see cref=""{{ClassNameWithoutGenericParameters}}""/> from a raw JavaScript expression.
         /// </summary>
         /// <param name=""jsExpression"">The JavaScript expression as a <see langword=""string""/>.</param>
-        /// <returns>A <see cref=""{{ClassName}}""/> representing the expression's result, or <see langword=""null""/> if the expression evaluates to <c>null</c> or <c>undefined</c>.</returns>
+        /// <returns>A <see cref=""{{ClassNameWithoutGenericParameters}}""/> representing the expression's result, or <see langword=""null""/> if the expression evaluates to <c>null</c> or <c>undefined</c>.</returns>
         new public static {{ClassName}}? FromExpression(string jsExpression)
         {
             // TODO: Which one is faster? This?
@@ -60,10 +60,10 @@ internal sealed class JsObjectGenerator: GobieClassGenerator
         }
 
         /// <summary>
-        /// Returns a <see cref=""{{ClassName}}""/> from a JavaScript handle.
+        /// Returns a <see cref=""{{ClassNameWithoutGenericParameters}}""/> from a JavaScript handle.
         /// </summary>
         /// <param name=""objectHandle"">The JavaScript handle.</param>
-        /// <returns>A <see cref=""{{ClassName}}""/> or <see langword=""null""/> if the handle is invalid.</returns>
+        /// <returns>A <see cref=""{{ClassNameWithoutGenericParameters}}""/> or <see langword=""null""/> if the handle is invalid.</returns>
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
         new public static {{ClassName}} FromHandle(int objectHandle)
         {
@@ -86,7 +86,7 @@ internal sealed class JsObjectGenerator: GobieClassGenerator
         partial void FinalizerPartial();
 
         /// <inheritdoc/>
-        ~{{ClassName}}()
+        ~{{ClassNameWithoutGenericParameters}}()
         {
             if (_objectCache.TryGetValue(JsHandle, out var reference) && 
                 reference.TryGetTarget(out {{ClassName}}? obj) && 

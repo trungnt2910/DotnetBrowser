@@ -74,7 +74,7 @@ internal class MethodGeneratorGeneratorHandler : IHandler
             .Replace("@@RESTTYPE@@", "TRest")
             .Replace("@@PARAMETERS@@", string.Join(",", Enumerable.Range(1, paramCount).Select(i => $"{{{{Param{i}}}}}")))
             .Replace("@@PARAMETERS_WITH_TYPE@@", string.Join(",", Enumerable.Range(1, paramCount).Select(i => $"{{{{T{i}}}}}? {{{{Param{i}}}}}").Concat(restTypeArr.Select(t => $"params {{{{{t}}}}}?[]? args"))))
-            .Replace("@@PARAMETERS_TO_JS_OBJECT_STRING@@", string.Join(", ", Enumerable.Range(1, paramCount).Select(i => $"{{(global::Trungnt2910.Browser.JsObject.ToJsObjectString({{{{Param{i}}}}}))}}")));
+            .Replace("@@PARAMETERS_TO_JS_OBJECT_STRING@@", string.Join(", ", Enumerable.Range(1, paramCount).Select(i => $"{{(global::Trungnt2910.Browser.JsObject.ToJsObjectString({{{{Param{i}}}}}))}}").Concat(restTypeArr.Select(t => $"{{string.Join(\"\",\"\", global::System.Linq.Enumerable.Select(args ?? global::System.Array.Empty<object>(), arg => global::Trungnt2910.Browser.JsObject.ToJsObjectString(arg)))}}"))));
 
         bool hasTypeArguments = typeArguments.Any();
         var typeArgumentsInBrackets = hasTypeArguments ? $"<{typeArguments}>" : "";

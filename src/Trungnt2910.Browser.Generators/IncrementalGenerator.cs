@@ -64,35 +64,37 @@ public class IncrementalGenerator : IIncrementalGenerator
 
         if (decl.Parent is CompilationUnitSyntax)
         {
+            IEnumerable<ClassDeclarationSyntax> classNodes = Array.Empty<ClassDeclarationSyntax>();
+
             foreach (var attribute in decl.Attributes)
             {
                 if (_handlers.TryGetValue(attribute.Name.ToString(), out IHandler handler))
                 {
-                    var classNodes = handler.Handle(attribute);
+                    classNodes = Enumerable.Concat(classNodes, handler.Handle(attribute));
+                }
+            }
 
-                    var langVersion = (context.SemanticModel.Compilation as CSharpCompilation)?.LanguageVersion ?? LanguageVersion.Latest;
+            var langVersion = (context.SemanticModel.Compilation as CSharpCompilation)?.LanguageVersion ?? LanguageVersion.Latest;
 
-                    var tree = SyntaxFactory.SyntaxTree(
-                        SyntaxFactory.CompilationUnit()
-                            .WithMembers(new SyntaxList<MemberDeclarationSyntax>((new MemberDeclarationSyntax[] {
+            var tree = SyntaxFactory.SyntaxTree(
+                SyntaxFactory.CompilationUnit()
+                    .WithMembers(new SyntaxList<MemberDeclarationSyntax>((new MemberDeclarationSyntax[] {
                                 SyntaxFactory.FileScopedNamespaceDeclaration(
                                     SyntaxFactory.IdentifierName("Trungnt2910.Browser.Generators")
                                     .WithLeadingTrivia(SyntaxFactory.Space)
                                 )
-                            }).Concat(classNodes)
-                        )), 
-                        new CSharpParseOptions()
-                            .WithLanguageVersion(langVersion));
-                    
-                    var newCompilation = context.SemanticModel.Compilation.AddSyntaxTrees(tree);
+                    }).Concat(classNodes)
+                )),
+                new CSharpParseOptions()
+                    .WithLanguageVersion(langVersion));
 
-                    // We have to get the nodes DIRECTLY from the tree.
-                    return (tree.GetRoot().ChildNodes()
-                                .Where(child => child is ClassDeclarationSyntax)
-                                .Cast<ClassDeclarationSyntax>(), 
-                            newCompilation.GetSemanticModel(tree));
-                }
-            }
+            var newCompilation = context.SemanticModel.Compilation.AddSyntaxTrees(tree);
+
+            // We have to get the nodes DIRECTLY from the tree.
+            return (tree.GetRoot().ChildNodes()
+                        .Where(child => child is ClassDeclarationSyntax)
+                        .Cast<ClassDeclarationSyntax>(),
+                    newCompilation.GetSemanticModel(tree));
         }
 
         return null;
