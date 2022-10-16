@@ -15,11 +15,14 @@ namespace Trungnt2910.Browser {
         private static readonly _referenceCount: number[] = [];
         private static readonly _referencedObjectsMap = new Map<any, number>();
         private static readonly _objectsWithEvents = new Map<number, Map<string, EventListener>>();
-        private static _managedDispatchEvent: (index: number, type: string, eventHandle: number) => void;
+        private static _managedDispatchEvent: (index: number, type: string, eventHandle: number | null) => void;
 
         public static CreateHandle(obj: any): number | null {
             if (JsObject._referencedObjectsMap.has(obj)) {
                 const index = JsObject._referencedObjectsMap.get(obj);
+                if (index === undefined) {
+                    return null;
+                }
                 return index;
             }
 
@@ -66,7 +69,7 @@ namespace Trungnt2910.Browser {
                 currentEventList.set(type, function (e) {
                     JsObject.DispatchEvent(index, type, e);
                 });
-                (JsObject.ReferencedObjects[index] as EventTarget).addEventListener(type, currentEventList.get(type));
+                (JsObject.ReferencedObjects[index] as EventTarget).addEventListener(type, <EventListener>currentEventList.get(type));
             }
         }
 
@@ -74,7 +77,7 @@ namespace Trungnt2910.Browser {
             const currentEventList = JsObject._objectsWithEvents.get(index);
             if (currentEventList !== undefined) {
                 if (currentEventList.has(type)) {
-                    (JsObject.ReferencedObjects[index] as EventTarget).removeEventListener(type, currentEventList.get(type));
+                    (JsObject.ReferencedObjects[index] as EventTarget).removeEventListener(type, <EventListener>currentEventList.get(type));
                     currentEventList.delete(type);
                 }
                 if (currentEventList.size == 0) {
