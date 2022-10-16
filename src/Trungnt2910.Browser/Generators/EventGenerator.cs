@@ -19,7 +19,7 @@ internal sealed class EventGenerator : GobieClassGenerator
         /// <summary>
         /// {{Comments}}
         /// </summary>
-        public event global::System.EventHandler<Event> {{Name}}
+        public event global::System.EventHandler<Event?> {{Name}}
         {
             add => AddEventListener(""{{JsName}}"", value);
             remove => RemoveEventListener(""{{JsName}}"", value);
@@ -40,9 +40,9 @@ internal sealed class EventGenerator<TEvent> : GobieClassGenerator where TEvent:
 
     [GobieTemplate]
     const string Template = @"
-        private global::System.Collections.Generic.HashSet<global::System.EventHandler<{{TEvent}}>>? _handlersFor{{Name}}OfType{{TEvent}};
+        private global::System.Collections.Generic.HashSet<global::System.EventHandler<{{TEvent}}?>>? _handlersFor{{Name}}OfType{{TEvent}};
         
-        private void _DispatcherFor{{Name}}OfType{{TEvent}}(object? sender, Event args)
+        private void _DispatcherFor{{Name}}OfType{{TEvent}}(object? sender, Event? args)
         {
             var castedSender = sender;
             if (sender is EventTarget eventTarget)
@@ -51,14 +51,14 @@ internal sealed class EventGenerator<TEvent> : GobieClassGenerator where TEvent:
             }
             foreach (var handler in _handlersFor{{Name}}OfType{{TEvent}}!)
             {
-                handler?.Invoke(castedSender, args.Cast<{{TEvent}}>());
+                handler?.Invoke(castedSender, args?.Cast<{{TEvent}}>());
             }
         }
 
         /// <summary>
         /// {{Comments}}
         /// </summary>
-        public event global::System.EventHandler<{{TEvent}}> {{Name}}
+        public event global::System.EventHandler<{{TEvent}}?> {{Name}}
         {
             add
             {

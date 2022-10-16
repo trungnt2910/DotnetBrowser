@@ -16,14 +16,14 @@ namespace Trungnt2910.Browser.Dom;
 public partial class EventTarget: JsObject
 {
     private const string _jsType = "Trungnt2910.Browser.JsObject";
-    private static readonly Dictionary<EventTarget, Dictionary<string, HashSet<EventHandler<Event>>>> _objectsWithEvents = new();
+    private static readonly Dictionary<EventTarget, Dictionary<string, HashSet<EventHandler<Event?>>>> _objectsWithEvents = new();
 
     /// <summary>
     /// Registers an event handler of a specific event type on the <see cref="EventTarget"/>.
     /// </summary>
     /// <param name="type">The event type.</param>
     /// <param name="listener">The C# listener.</param>
-    public void AddEventListener(string type, EventHandler<Event> listener)
+    public void AddEventListener(string type, EventHandler<Event?> listener)
     {
         if (!_objectsWithEvents.TryGetValue(this, out var currentEventDict))
         {
@@ -46,7 +46,7 @@ public partial class EventTarget: JsObject
     /// </summary>
     /// <param name="type">The event type.</param>
     /// <param name="listener">The C# listener.</param>
-    public void RemoveEventListener(string type, EventHandler<Event> listener)
+    public void RemoveEventListener(string type, EventHandler<Event?> listener)
     {
         if (_objectsWithEvents.TryGetValue(this, out var currentEventDict))
         {
@@ -73,14 +73,14 @@ public partial class EventTarget: JsObject
     private static partial void CleanupEventListener(int handle, string type);
 
     [JSExport]
-    internal static void DispatchEvent(int handle, string type, int eventArgsHandle)
+    internal static void DispatchEvent(int handle, string type, int? eventArgsHandle)
     {
         var sender = FromHandle(handle);
         if (_objectsWithEvents.TryGetValue(sender, out var currentEventDict))
         {
             if (currentEventDict.TryGetValue(type, out var currentEventTypeSet))
             {
-                var eventArgs = Event.FromHandle(eventArgsHandle);
+                var eventArgs = eventArgsHandle != null ? Event.FromHandle((int)eventArgsHandle) : null;
                 foreach (var listener in currentEventTypeSet)
                 {
                     listener?.Invoke(sender, eventArgs);
