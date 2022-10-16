@@ -1,13 +1,24 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System.ComponentModel;
+using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.JavaScript;
 using System.Text;
 
 namespace Trungnt2910.Browser;
 
-internal static partial class WebAssemblyRuntime
+/// <summary>
+/// Methods used by source generators for JavaScript interop. Do not use them directly.
+/// </summary>
+[EditorBrowsable(EditorBrowsableState.Never)]
+public static partial class WebAssemblyRuntime
 {
+    /// <summary>
+    /// Escapes a string for use with JavaScript.
+    /// </summary>
+    /// <param name="s">The string to escape.</param>
+    /// <returns>An escaped string that can be used in JavaScript string literals.</returns>
     [Pure]
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public static string EscapeJs(string s)
     {
         if (s == null)
@@ -86,6 +97,12 @@ internal static partial class WebAssemblyRuntime
         }
     }
 
+    /// <summary>
+    /// Invokes the specified JavaScript and returns the result as a string.
+    /// </summary>
+    /// <param name="js">The JavaScript code.</param>
+    /// <returns>A string, or <see langword="null"/> if the JavaScript result is <c>null</c> or <c>undefined</c>.</returns>
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public static string? InvokeJS(string js)
     {
         return StringOrNullFromJs(@$"
@@ -102,45 +119,117 @@ internal static partial class WebAssemblyRuntime
         ");
     }
 
+    /// <summary>
+    /// Gets a string from a JavaScript expression.
+    /// </summary>
+    /// <param name="js">The JavaScript expression.</param>
+    /// <returns>A string resulting from this expression.</returns>
+    [EditorBrowsable(EditorBrowsableState.Never)]
     [JSImport("globalThis.window.eval")]
     public static partial string StringFromJs(string js);
 
+    /// <summary>
+    /// Gets a string from a JavaScript expression.
+    /// </summary>
+    /// <param name="js">The JavaScript expression.</param>
+    /// <returns>A string resulting from this expression, or <see langword="null"/> if the JavaScript result is <c>null</c> or <c>undefined</c>.</returns>
+    [EditorBrowsable(EditorBrowsableState.Never)]
     [JSImport("globalThis.window.eval")]
     public static partial string? StringOrNullFromJs(string js);
 
+    /// <summary>
+    /// Gets a boolean from a JavaScript expression.
+    /// </summary>
+    /// <param name="js">The JavaScript expression.</param>
+    /// <returns>A boolean resulting from this expression.</returns>
+    [EditorBrowsable(EditorBrowsableState.Never)]
     [JSImport("globalThis.window.eval")]
     public static partial bool BoolFromJs(string js);
 
+    /// <summary>
+    /// Gets a boolean from a JavaScript expression.
+    /// </summary>
+    /// <param name="js">The JavaScript expression.</param>
+    /// <returns>A boolean resulting from this expression, or <see langword="null"/> if the JavaScript result is <c>null</c> or <c>undefined</c>.</returns>
+    [EditorBrowsable(EditorBrowsableState.Never)]
     [JSImport("globalThis.window.eval")]
     public static partial bool BoolOrNullFromJs(string js);
 
+    /// <summary>
+    /// Gets an integer from a JavaScript expression.
+    /// </summary>
+    /// <param name="js">The JavaScript expression.</param>
+    /// <returns>An integer resulting from this expression.</returns>
+    [EditorBrowsable(EditorBrowsableState.Never)]
     [JSImport("globalThis.window.eval")]
     public static partial int IntFromJs(string js);
 
+    /// <summary>
+    /// Gets an integer from a JavaScript expression.
+    /// </summary>
+    /// <param name="js">The JavaScript expression.</param>
+    /// <returns>An integer resulting from this expression, or <see langword="null"/> if the JavaScript result is <c>null</c> or <c>undefined</c>.</returns>
+    [EditorBrowsable(EditorBrowsableState.Never)]
     [JSImport("globalThis.window.eval")]
     public static partial int? IntOrNullFromJs(string js);
 
+    /// <summary>
+    /// Gets a double from a JavaScript expression.
+    /// </summary>
+    /// <param name="js">The JavaScript expression.</param>
+    /// <returns>A double resulting from this expression.</returns>
+    [EditorBrowsable(EditorBrowsableState.Never)]
     [JSImport("globalThis.window.eval")]
     public static partial double DoubleFromJs(string js);
 
+    /// <summary>
+    /// Gets a double from a JavaScript expression.
+    /// </summary>
+    /// <param name="js">The JavaScript expression.</param>
+    /// <returns>A double resulting from this expression, or <see langword="null"/> if the JavaScript result is <c>null</c> or <c>undefined</c>.</returns>
+    [EditorBrowsable(EditorBrowsableState.Never)]
     [JSImport("globalThis.window.eval")]
     public static partial double? DoubleOrNullFromJs(string js);
 
+    /// <summary>
+    /// Gets an object from a JavaScript expression.
+    /// </summary>
+    /// <param name="js">The JavaScript expression.</param>
+    /// <returns>A <see cref="JSObject"/> representing the result of this expression.</returns>
+    [EditorBrowsable(EditorBrowsableState.Never)]
     [JSImport("globalThis.window.eval")]
     public static partial JSObject ObjectFromJs(string js);
 
+    /// <summary>
+    /// Gets an object from a JavaScript expression.
+    /// </summary>
+    /// <param name="js">The JavaScript expression.</param>
+    /// <returns>A <see cref="JSObject"/> representing the result of this expression, or <see langword="null"/> if the JavaScript result is <c>null</c> or <c>undefined</c>.</returns>
+    [EditorBrowsable(EditorBrowsableState.Never)]
     [JSImport("globalThis.window.eval")]
     public static partial JSObject? ObjectOrNullFromJs(string js);
 
     #region Generator Helpers
     // These methods exist to serve code generators only.
 
+    /// <summary>
+    /// An alias to <see cref="BoolOrNullFromJs"/> used by code generators.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool? boolOrNullFromJs(string js) => BoolOrNullFromJs(js);
 
+    /// <summary>
+    /// An alias to <see cref="IntOrNullFromJs"/> used by code generators.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int? intOrNullFromJs(string js) => IntOrNullFromJs(js);
 
+    /// <summary>
+    /// An alias to <see cref="DoubleOrNullFromJs"/> used by code generators.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static double? doubleOrNullFromJs(string js) => DoubleOrNullFromJs(js);
     #endregion
