@@ -3,7 +3,8 @@
 }
 
 declare interface DotnetRuntime {
-    BINDING: Binding
+    BINDING: Binding,
+    getAssemblyExports(assemblyName: string): Promise<any>;
 }
 
 declare function getDotnetRuntime(index: number): DotnetRuntime;
@@ -15,7 +16,27 @@ namespace Trungnt2910.Browser {
         private static readonly _referenceCount: number[] = [];
         private static readonly _referencedObjectsMap = new Map<any, number>();
         private static readonly _objectsWithEvents = new Map<number, Map<string, EventListener>>();
+
+        private static readonly _assemblyName = "Trungnt2910.Browser";
         private static _managedDispatchEvent: (index: number, type: string, eventHandle: number | null) => void;
+        private static _managedDispatchFulfilled: (index: number, valueIndex: number | null) => void;
+        private static _managedDispatchRejected: (index: number, reason: any) => void;
+
+        public static async JsObject() {
+            // Why do they even have to make getAssemblyExports async?????
+            let exports = await getDotnetRuntime(0).getAssemblyExports(JsObject._assemblyName);
+            // This piece of code is executing in a very dumb context, probably during the
+            // initialization of the managed Trungnt2910.Browser module, but before any JSExport
+            // stuff gets to run.
+            while (!exports.Trungnt2910) {
+                exports = await getDotnetRuntime(0).getAssemblyExports(JsObject._assemblyName);
+            }
+            // If any of these ever contains the old value returned by BindStaticMethodDeprecatedFallback,
+            // replace them.
+            JsObject._managedDispatchEvent = exports.Trungnt2910.Browser.Dom.EventTarget.DispatchEvent;
+            JsObject._managedDispatchFulfilled = exports.Trungnt2910.Browser.Promise.DispatchFulfilled;
+            JsObject._managedDispatchRejected = exports.Trungnt2910.Browser.Promise.DispatchRejected;
+        }
 
         public static CreateHandle(obj: any): number | null {
             if (JsObject._referencedObjectsMap.has(obj)) {
@@ -87,8 +108,34 @@ namespace Trungnt2910.Browser {
         }
 
         private static DispatchEvent(index: number, type: string, event: Event) {
-            JsObject._managedDispatchEvent = JsObject._managedDispatchEvent || getDotnetRuntime(0).BINDING.bind_static_method("[Trungnt2910.Browser] Trungnt2910.Browser.Dom.EventTarget:DispatchEvent");
+            JsObject._managedDispatchEvent = JsObject._managedDispatchEvent || JsObject.BindStaticMethodDeprecatedFallback("Trungnt2910.Browser.Dom.EventTarget", "DispatchEvent");
             JsObject._managedDispatchEvent(index, type, JsObject.CreateHandle(event));
+        }
+
+        public static SetupPromiseHandlers(index: number) {
+            const obj = JsObject.ReferencedObjects[index];
+            const promise = <Promise<any>>obj;
+            promise.then((result) => {
+                JsObject.DispatchFulfilled(index, result);
+            }, (reason) => {
+                JsObject.DispatchRejected(index, reason);
+            });
+        }
+
+        private static DispatchFulfilled(index: number, result: any) {
+            JsObject._managedDispatchFulfilled = JsObject._managedDispatchFulfilled || JsObject.BindStaticMethodDeprecatedFallback("Trungnt2910.Browser.Promise", "DispatchFulfilled");
+            JsObject._managedDispatchFulfilled(index, JsObject.CreateHandle(result));
+        }
+
+        private static DispatchRejected(index: number, reason: any) {
+            JsObject._managedDispatchRejected = JsObject._managedDispatchRejected || JsObject.BindStaticMethodDeprecatedFallback("Trungnt2910.Browser.Promise", "DispatchRejected");
+            JsObject._managedDispatchRejected(index, reason);
+        }
+
+        private static BindStaticMethodDeprecatedFallback<T>(className: string, name: string): T {
+            return <T>(getDotnetRuntime(0).BINDING.bind_static_method(`[${JsObject._assemblyName}] ${className}:${name}`));
         }
     }
 }
+
+Trungnt2910.Browser.JsObject.JsObject();

@@ -89,6 +89,12 @@ document.Paste += (sender, clipboardEvent) =>
     }
 };
 
+var promise = Window.Instance
+    .InvokeMember("eval", "new Promise((resolve, reject) => setTimeout(() => { console.log(\"This is a delayed hello from a JavaScript promise!\"); resolve(); }, 1000))")
+    .Cast<Promise>();
+await promise;
+Console.WriteLine("Nice to meet you, JavaScript promise!");
+
 await Task.Delay(-1);
 #elif WINDOWS
 Console.WriteLine(Directory.GetCurrentDirectory());
