@@ -75,6 +75,13 @@ document.Paste += (sender, clipboardEvent) =>
         var jsArr = JsObject.FromExpression("[]").Cast<JsArray>();
         jsArr.Push(text.Cast<object>().ToArray());
         Window.Instance["console"].InvokeMember("log", "Pasted characters: ", jsArr);
+        var intArr = JsArray<int>.FromExpression("[]");
+        for (int i = 0; i < text.Length; ++i)
+        {
+            intArr.Add(text[i]);
+        }
+        Window.Instance["console"].InvokeMember("log", "Pasted characters' codes: ", intArr);
+        Console.WriteLine($"Pasted characters' codes (C# side): {{{string.Join(", ", intArr)}}}");
     }
     else
     {

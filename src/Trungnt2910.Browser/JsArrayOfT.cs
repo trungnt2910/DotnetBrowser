@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Numerics;
 using System.Reflection;
 using Trungnt2910.Browser.Generators;
 
@@ -22,10 +21,32 @@ namespace Trungnt2910.Browser;
 [Method<JsObject, int>("at", "At", Param1 = "index", Comments = "Returns the array item at the given index. Accepts negative integers, which count back from the last item.")]
 //[NumericVarArgsMethod<int, T>("push", "Push", Comments = "Adds one or more elements to the end of an array, and returns the new <see cref=\"Length\"/> of the array.")]
 //[VarArgsMethod<JsArray, int, int, T>("splice", "Splice", Param1 = "start", Param2 = "deleteCount", Comments = "Adds and/or removes elements from an array.")]
-public partial class JsArray<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)] T> : JsObject, IList<T?> where T : JsObject
+public partial class JsArray<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)] T> : JsObject, IList<T?>
 {
     // C# does not support using generic parameters to instantiate attributes.
     // For this class only, some methods have to be manually written.
+
+    private static readonly MethodInfo _converterMethod;
+    private static readonly bool _isParse;
+
+    static JsArray()
+    {
+        var fromExpression = typeof(T).GetMethod(nameof(FromExpression), BindingFlags.Static | BindingFlags.Public);
+        if (fromExpression != null)
+        {
+            _converterMethod = fromExpression;
+            _isParse = false;
+            return;
+        }
+        var parse = typeof(T).GetMethod("TryParse", BindingFlags.Static | BindingFlags.Public, new[] { typeof(string), typeof(T).MakeByRefType() } );
+        if (parse != null)
+        {
+            _converterMethod = parse;
+            _isParse = true;
+            return;
+        }
+        throw new NotSupportedException($"Attempted to create a JsArray of an unsupported type {typeof(T).FullName}.");
+    }
 
     /// <inheritdoc/>
     public T? this[int index]
@@ -36,8 +57,20 @@ public partial class JsArray<[DynamicallyAccessedMembers(DynamicallyAccessedMemb
             {
                 throw new ArgumentOutOfRangeException(nameof(index));
             }
-            var fromExpression = typeof(T).GetMethod(nameof(FromExpression), BindingFlags.Static | BindingFlags.Public);
-            return (T?)fromExpression!.Invoke(null, new object[] { $"{_jsThis}[{index}]" })!;
+            if (_isParse)
+            {
+                var parameters = new object?[] { WebAssemblyRuntime.InvokeJS($"{_jsThis}[{index}]"), null };
+                var result = (bool)_converterMethod!.Invoke(null, parameters)!;
+                if (result)
+                {
+                    return (T?)parameters[1];
+                }
+                return default;
+            }
+            else
+            {
+                return (T?)_converterMethod!.Invoke(null, new object[] { $"{_jsThis}[{index}]" })!;
+            }
         }
         set
         {
@@ -45,7 +78,7 @@ public partial class JsArray<[DynamicallyAccessedMembers(DynamicallyAccessedMemb
             {
                 throw new ArgumentOutOfRangeException(nameof(index));
             }
-            WebAssemblyRuntime.InvokeJS($"{_jsThis}[{index}] = {value?._jsThis ?? "null"}");
+            WebAssemblyRuntime.InvokeJS($"{_jsThis}[{index}] = {ToJsObjectString(this) ?? "null"}");
         }
     }
 
@@ -150,4 +183,5 @@ public partial class JsArray<[DynamicallyAccessedMembers(DynamicallyAccessedMemb
     /// </summary>
     public JsArray<T>? Splice(int? start, int? deleteCount, params T?[]? args) => JsArray<T>.FromExpression($"{_jsThis}.splice({ToJsObjectString(start)}, {ToJsObjectString(deleteCount)}, {string.Join(",", args?.Select(arg => ToJsObjectString(arg)) ?? Array.Empty<string>())})");
     #endregion
+
 }
