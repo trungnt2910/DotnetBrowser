@@ -24,15 +24,45 @@ public partial class Promise: JsObject
     /// <returns>A <see cref="TaskAwaiter"/>.</returns>
     public TaskAwaiter GetAwaiter()
     {
-        if (_task == null)
-        {
-            var tcs = new TaskCompletionSource<int?>();
-            _taskCompletionSources.Add(JsHandle, tcs);
-            _task = tcs.Task;
-            SetupPromiseHandlers(JsHandle);
-        }
-
+        _task ??= GetTaskForThis();
         return _task.GetAwaiter();
+    }
+
+    /// <summary>
+    /// Converts this <see cref="Promise"/> to a managed <see cref="Task"/>
+    /// </summary>
+    /// <param name="promise">The promise to convert.</param>
+    public static implicit operator Task(Promise promise)
+    {
+        promise._task ??= promise.GetTaskForThis();
+        return promise._task;
+    }
+
+    private Task GetTaskForThis()
+    {
+        var tcs = new TaskCompletionSource<int?>();
+        _taskCompletionSources.Add(JsHandle, tcs);
+        SetupPromiseHandlers(JsHandle);
+        return ProcessTaskReturnValue(tcs.Task);
+    }
+
+    /// <summary>
+    /// Given a task containing a handle, process its return value.
+    /// </summary>
+    /// <param name="input">The task with a int handle.</param>
+    /// <returns>A task containing the managed result.</returns>
+    /// <remarks>Should be overrided by <see cref="Promise{T}"/> to return the desired value to awaiters.</remarks>
+    private protected virtual Task ProcessTaskReturnValue(Task<int?> input)
+    {
+        return input.ContinueWith((task) =>
+        {
+            if (task.Result != null)
+            {
+                // Immediately dispose of the result.
+                JsObject.IncrementReferenceCount(task.Result.Value);
+                JsObject.DecrementReferenceCount(task.Result.Value);
+            }
+        });
     }
 
     [JSImport($"globalThis.{_jsType}.SetupPromiseHandlers")]

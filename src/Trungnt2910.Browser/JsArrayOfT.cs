@@ -136,7 +136,7 @@ public partial class JsArray<[DynamicallyAccessedMembers(DynamicallyAccessedMemb
     /// <summary>
     /// Returns the first (least) index at which a given element can be found in the calling array.
     /// </summary>
-    public int IndexOf(T? searchElement) => WebAssemblyRuntime.IntFromJs($"{_jsThis}.indexOf({ToJsObjectString(searchElement)})");
+    public int IndexOf(T? searchElement) => WebAssemblyRuntime.Int32FromJs($"{_jsThis}.indexOf({ToJsObjectString(searchElement)})");
 
     /// <inheritdoc/>
     public void Insert(int index, T? item)
@@ -171,12 +171,12 @@ public partial class JsArray<[DynamicallyAccessedMembers(DynamicallyAccessedMemb
     /// <summary>
     /// Determines whether the calling array contains a value, returning <c>true</c> or <c>false</c> as appropriate.
     /// </summary>
-    public bool? Includes(T? searchElement) => WebAssemblyRuntime.BoolOrNullFromJs($"{_jsThis}.includes({ToJsObjectString(searchElement)})");
+    public bool? Includes(T? searchElement) => WebAssemblyRuntime.BooleanOrNullFromJs($"{_jsThis}.includes({ToJsObjectString(searchElement)})");
 
     /// <summary>
     /// Adds one or more elements to the end of an array, and returns the new <see cref = "Length"/> of the array.
     /// </summary>
-    public int? Push(params T?[]? args) => WebAssemblyRuntime.IntOrNullFromJs($"{_jsThis}.push({string.Join(",", args?.Select(arg => ToJsObjectString(arg)) ?? Array.Empty<string>())})");
+    public int? Push(params T?[]? args) => WebAssemblyRuntime.Int32OrNullFromJs($"{_jsThis}.push({string.Join(",", args?.Select(arg => ToJsObjectString(arg)) ?? Array.Empty<string>())})");
 
     /// <summary>
     /// Adds and/or removes elements from an array.

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.JavaScript;
@@ -44,10 +45,10 @@ public partial class JsObject : IConvertible
     }
 
     [JSImport($"globalThis.{_jsType}.{nameof(IncrementReferenceCount)}")]
-    private static partial void IncrementReferenceCount(int index);
+    internal static partial void IncrementReferenceCount(int index);
 
     [JSImport($"globalThis.{_jsType}.{nameof(DecrementReferenceCount)}")]
-    private static partial void DecrementReferenceCount(int index);
+    internal static partial void DecrementReferenceCount(int index);
 
     /// <summary>
     /// Creates an internal handle for <paramref name="jsObject"/>.
@@ -86,7 +87,7 @@ public partial class JsObject : IConvertible
     public static JsObject? FromExpression(string jsExpression)
     {
         // TODO: Which one is faster? This?
-        var objectHandle = WebAssemblyRuntime.IntOrNullFromJs($"{_jsType}.CreateHandle({jsExpression})");
+        var objectHandle = WebAssemblyRuntime.Int32OrNullFromJs($"{_jsType}.CreateHandle({jsExpression})");
         // or this?
         // using var systemObj = WebAssemblyRuntime.ObjectOrNullFromJs(jsExpression);
         // var objectHandle = CreateHandle(systemObj);
@@ -279,7 +280,7 @@ public partial class JsObject : IConvertible
     /// <inheritdoc/>
     public bool ToBoolean(IFormatProvider? provider)
     {
-        return WebAssemblyRuntime.BoolFromJs($"({_jsThis}) ? true : false");
+        return WebAssemblyRuntime.BooleanFromJs($"({_jsThis}) ? true : false");
     }
 
     /// <inheritdoc/>
@@ -288,10 +289,11 @@ public partial class JsObject : IConvertible
         switch (GetJsType())
         {
             case "string":
-            case "number":
                 return byte.Parse(ToStringRaw(), provider);
+            case "number":
+                return WebAssemblyRuntime.ByteFromJs(_jsThis);
             default:
-                throw new NotSupportedException();
+                throw new InvalidCastException($"Cannot convert a JsObject of {ToString()} to Byte.");
         }
     }
 
@@ -303,9 +305,9 @@ public partial class JsObject : IConvertible
             case "string":
                 return ToStringRaw()[0];
             case "number":
-                return (char)int.Parse(ToStringRaw(), provider);
+                return (char)ToInt32(provider);
             default:
-                throw new NotSupportedException();
+                throw new InvalidCastException($"Cannot convert a JsObject of {ToString()} to Char.");
         }
     }
 
@@ -317,9 +319,9 @@ public partial class JsObject : IConvertible
             case "string":
                 return DateTime.Parse(ToStringRaw(), provider);
             case "number":
-                return DateTimeOffset.FromUnixTimeMilliseconds(long.Parse(ToStringRaw())).DateTime;
+                return DateTimeOffset.FromUnixTimeMilliseconds((long)ToDouble(provider)).DateTime;
             default:
-                throw new NotSupportedException();
+                throw new InvalidCastException($"Cannot convert a JsObject of {ToString()} to DateTime.");
         }
     }
 
@@ -329,10 +331,11 @@ public partial class JsObject : IConvertible
         switch (GetJsType())
         {
             case "string":
-            case "number":
                 return decimal.Parse(ToStringRaw(), provider);
+            case "number":
+                return WebAssemblyRuntime.DecimalFromJs(_jsThis);
             default:
-                throw new NotSupportedException();
+                throw new InvalidCastException($"Cannot convert a JsObject of {ToString()} to Decimal.");
         }
     }
 
@@ -342,10 +345,11 @@ public partial class JsObject : IConvertible
         switch (GetJsType())
         {
             case "string":
-            case "number":
                 return double.Parse(ToStringRaw(), provider);
+            case "number":
+                return WebAssemblyRuntime.DoubleFromJs(_jsThis);
             default:
-                throw new NotSupportedException();
+                throw new InvalidCastException($"Cannot convert a JsObject of {ToString()} to Double.");
         }
     }
 
@@ -355,10 +359,11 @@ public partial class JsObject : IConvertible
         switch (GetJsType())
         {
             case "string":
-            case "number":
                 return short.Parse(ToStringRaw(), provider);
+            case "number":
+                return WebAssemblyRuntime.Int16FromJs(_jsThis);
             default:
-                throw new NotSupportedException();
+                throw new InvalidCastException($"Cannot convert a JsObject of {ToString()} to Int16.");
         }
     }
 
@@ -368,10 +373,11 @@ public partial class JsObject : IConvertible
         switch (GetJsType())
         {
             case "string":
-            case "number":
                 return int.Parse(ToStringRaw(), provider);
+            case "number":
+                return WebAssemblyRuntime.Int32FromJs(_jsThis);
             default:
-                throw new NotSupportedException();
+                throw new InvalidCastException($"Cannot convert a JsObject of {ToString()} to Int32.");
         }
     }
 
@@ -381,10 +387,11 @@ public partial class JsObject : IConvertible
         switch (GetJsType())
         {
             case "string":
-            case "number":
                 return long.Parse(ToStringRaw(), provider);
+            case "number":
+                return WebAssemblyRuntime.Int64FromJs(_jsThis);
             default:
-                throw new NotSupportedException();
+                throw new InvalidCastException($"Cannot convert a JsObject of {ToString()} to Int64.");
         }
     }
 
@@ -394,10 +401,11 @@ public partial class JsObject : IConvertible
         switch (GetJsType())
         {
             case "string":
-            case "number":
                 return sbyte.Parse(ToStringRaw(), provider);
+            case "number":
+                return WebAssemblyRuntime.SByteFromJs(_jsThis);
             default:
-                throw new NotSupportedException();
+                throw new InvalidCastException($"Cannot convert a JsObject of {ToString()} to SByte.");
         }
     }
 
@@ -407,10 +415,11 @@ public partial class JsObject : IConvertible
         switch (GetJsType())
         {
             case "string":
-            case "number":
                 return float.Parse(ToStringRaw(), provider);
+            case "number":
+                return WebAssemblyRuntime.SingleFromJs(_jsThis);
             default:
-                throw new NotSupportedException();
+                throw new InvalidCastException($"Cannot convert a JsObject of {ToString()} to Single.");
         }
     }
 
@@ -423,7 +432,43 @@ public partial class JsObject : IConvertible
     /// <inheritdoc/>
     public object ToType(Type conversionType, IFormatProvider? provider)
     {
-        throw new NotImplementedException();
+        switch (Type.GetTypeCode(conversionType))
+        {
+            case TypeCode.Boolean:
+                return ToBoolean(provider);
+            case TypeCode.Byte:
+                return ToByte(provider);
+            case TypeCode.Char:
+                return ToChar(provider);
+            case TypeCode.DateTime:
+                return ToDateTime(provider);
+            case TypeCode.Decimal:
+                return ToDecimal(provider);
+            case TypeCode.Double:
+                return ToDouble(provider);
+            case TypeCode.Int16:
+                return ToInt16(provider);
+            case TypeCode.Int32:
+                return ToInt32(provider);
+            case TypeCode.Int64:
+                return ToInt64(provider);
+            case TypeCode.Object:
+                return this;
+            case TypeCode.SByte:
+                return ToSByte(provider);
+            case TypeCode.Single:
+                return ToSingle(provider);
+            case TypeCode.String:
+                return ToString(provider);
+            case TypeCode.UInt16:
+                return ToUInt16(provider);
+            case TypeCode.UInt32:
+                return ToUInt32(provider);
+            case TypeCode.UInt64:
+                return ToUInt64(provider);
+            default:
+                throw new InvalidCastException($"Conversion from JsObject to {conversionType} is not supported.");
+        }
     }
 
     /// <inheritdoc/>
@@ -432,10 +477,11 @@ public partial class JsObject : IConvertible
         switch (GetJsType())
         {
             case "string":
-            case "number":
                 return ushort.Parse(ToStringRaw(), provider);
+            case "number":
+                return WebAssemblyRuntime.UInt16FromJs(_jsThis);
             default:
-                throw new NotSupportedException();
+                throw new InvalidCastException($"Cannot convert a JsObject of {ToString()} to UInt16.");
         }
     }
 
@@ -445,10 +491,11 @@ public partial class JsObject : IConvertible
         switch (GetJsType())
         {
             case "string":
-            case "number":
                 return uint.Parse(ToStringRaw(), provider);
+            case "number":
+                return WebAssemblyRuntime.UInt32FromJs(_jsThis);
             default:
-                throw new NotSupportedException();
+                throw new InvalidCastException($"Cannot convert a JsObject of {ToString()} to UInt32.");
         }
     }
 
@@ -458,10 +505,11 @@ public partial class JsObject : IConvertible
         switch (GetJsType())
         {
             case "string":
-            case "number":
                 return ulong.Parse(ToStringRaw(), provider);
+            case "number":
+                return WebAssemblyRuntime.UInt64FromJs(_jsThis);
             default:
-                throw new NotSupportedException();
+                throw new InvalidCastException($"Cannot convert a JsObject of {ToString()} to UInt64.");
         }
     }
     #endregion

@@ -95,6 +95,20 @@ var promise = Window.Instance
 await promise;
 Console.WriteLine("Nice to meet you, JavaScript promise!");
 
+var numberPromise = Promise<int>
+    .FromExpression("new Promise((resolve, reject) => setTimeout(() => { console.log(\"Returning a delayed number from a JavaScript promise!\"); resolve(2910); }, 1000))");
+var number = await numberPromise;
+Console.WriteLine($"Got a number from JavaScript: {number}.");
+
+var windowPromise = Promise<Window>
+    .FromExpression("new Promise((resolve, reject) => setTimeout(() => { console.log(\"Returning a delayed window from a JavaScript promise!\"); resolve(window); }, 1000))");
+var window = await windowPromise;
+Console.WriteLine($"Got a window from JavaScript: {window.Location.Href}");
+
+var fetchResult = await Window.Instance.InvokeMember("fetch", "https://www.randomnumberapi.com/api/v1.0/random?min=100&max=1000&count=5").Cast<Promise<JsObject>>();
+var fetchResultString = await fetchResult.InvokeMember("text").Cast<Promise<string>>();
+Console.WriteLine($"Array of random numbers: {fetchResultString}");
+
 await Task.Delay(-1);
 #elif WINDOWS
 Console.WriteLine(Directory.GetCurrentDirectory());

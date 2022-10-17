@@ -46,7 +46,7 @@ internal sealed class JsObjectGenerator: GobieClassGenerator
         new public static {{ClassName}}? FromExpression(string jsExpression)
         {
             // TODO: Which one is faster? This?
-            var objectHandle = global::Trungnt2910.Browser.WebAssemblyRuntime.IntOrNullFromJs($""Trungnt2910.Browser.JsObject.CreateHandle({jsExpression})"");
+            var objectHandle = global::Trungnt2910.Browser.WebAssemblyRuntime.Int32OrNullFromJs($""Trungnt2910.Browser.JsObject.CreateHandle({jsExpression})"");
             // or this?
             // using var systemObj = global::Trungnt2910.Browser.WebAssemblyRuntime.ObjectOrNullFromJs(jsExpression);
             // var objectHandle = global::Trungnt2910.Browser.JsObject.CreateHandle(systemObj);
