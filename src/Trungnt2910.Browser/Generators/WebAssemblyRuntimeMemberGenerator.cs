@@ -18,7 +18,7 @@ internal sealed class WebAssemblyRuntimeMemberGenerator : GobieClassGenerator
         /// </summary>
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
         [global::System.Runtime.CompilerServices.MethodImpl(global::System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-        public static {{AliasedType}}? {{AliasedType}}FromJs(string js) => {{Type}}FromJs(js);
+        public static {{AliasedType}} {{AliasedType}}FromJs(string js) => {{Type}}FromJs(js);
 
         /// <summary>
         /// An alias to <see cref=""{{Type}}OrNullFromJs""/> used by code generators.

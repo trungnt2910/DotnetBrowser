@@ -78,7 +78,7 @@ public partial class JsArray<[DynamicallyAccessedMembers(DynamicallyAccessedMemb
             {
                 throw new ArgumentOutOfRangeException(nameof(index));
             }
-            WebAssemblyRuntime.InvokeJS($"{_jsThis}[{index}] = {ToJsObjectString(this) ?? "null"}");
+            WebAssemblyRuntime.InvokeJS($"{_jsThis}[{index}] = {ToJsObjectString(value) ?? "null"}");
         }
     }
 
