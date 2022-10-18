@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Reflection;
 using Trungnt2910.Browser.Generators;
 
 namespace Trungnt2910.Browser;
@@ -26,28 +25,6 @@ public partial class JsArray<[DynamicallyAccessedMembers(DynamicallyAccessedMemb
     // C# does not support using generic parameters to instantiate attributes.
     // For this class only, some methods have to be manually written.
 
-    private static readonly MethodInfo _converterMethod;
-    private static readonly bool _isParse;
-
-    static JsArray()
-    {
-        var fromExpression = typeof(T).GetMethod(nameof(FromExpression), BindingFlags.Static | BindingFlags.Public);
-        if (fromExpression != null)
-        {
-            _converterMethod = fromExpression;
-            _isParse = false;
-            return;
-        }
-        var parse = typeof(T).GetMethod("TryParse", BindingFlags.Static | BindingFlags.Public, new[] { typeof(string), typeof(T).MakeByRefType() } );
-        if (parse != null)
-        {
-            _converterMethod = parse;
-            _isParse = true;
-            return;
-        }
-        throw new NotSupportedException($"Attempted to create a JsArray of an unsupported type {typeof(T).FullName}.");
-    }
-
     /// <inheritdoc/>
     public T? this[int index]
     {
@@ -57,20 +34,7 @@ public partial class JsArray<[DynamicallyAccessedMembers(DynamicallyAccessedMemb
             {
                 throw new ArgumentOutOfRangeException(nameof(index));
             }
-            if (_isParse)
-            {
-                var parameters = new object?[] { WebAssemblyRuntime.InvokeJS($"{_jsThis}[{index}]"), null };
-                var result = (bool)_converterMethod!.Invoke(null, parameters)!;
-                if (result)
-                {
-                    return (T?)parameters[1];
-                }
-                return default;
-            }
-            else
-            {
-                return (T?)_converterMethod!.Invoke(null, new object[] { $"{_jsThis}[{index}]" })!;
-            }
+            return WebAssemblyRuntime<T>.ValueOrNullFromJs($"{_jsThis}[{index}]");
         }
         set
         {
@@ -78,7 +42,7 @@ public partial class JsArray<[DynamicallyAccessedMembers(DynamicallyAccessedMemb
             {
                 throw new ArgumentOutOfRangeException(nameof(index));
             }
-            WebAssemblyRuntime.InvokeJS($"{_jsThis}[{index}] = {ToJsObjectString(value) ?? "null"}");
+            WebAssemblyRuntime<T>.ValueOrNullFromJs($"{_jsThis}[{index}] = {ToJsObjectString(value) ?? "null"}");
         }
     }
 

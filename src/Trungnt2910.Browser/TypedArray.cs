@@ -48,6 +48,19 @@ public partial class Uint8Array : ArrayBufferView, IReadOnlyList<byte>
 }
 
 /// <summary>
+/// The <see cref="Uint8ClampedArray"/> typed array represents an array of 8-bit unsigned integers clamped to 0-255;
+/// if you specified a value that is out of the range of [0,255], 0 or 255 will be set instead;
+/// if you specify a non-integer, the nearest integer will be set. The contents are initialized to 0.
+/// Once established, you can reference elements in the array using the object's methods, or using standard array index syntax
+/// (that is, using bracket notation).
+/// </summary>
+[JsObject]
+[TypedArray("byte")]
+public partial class Uint8ClampedArray : ArrayBufferView, IReadOnlyList<byte>
+{
+}
+
+/// <summary>
 /// The <see cref="Int16Array"/> typed array represents an array of twos-complement 16-bit signed integers
 /// in the platform byte order. If control over byte order is needed, use <see cref="DataView"/> instead.
 /// The contents are initialized to 0. Once established, you can reference elements in the array using the object's methods,

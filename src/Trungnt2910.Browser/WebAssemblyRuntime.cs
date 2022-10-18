@@ -1,5 +1,8 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
+using System.Reflection;
 using System.Runtime.InteropServices.JavaScript;
 using System.Text;
 using Trungnt2910.Browser.Generators;
@@ -139,7 +142,7 @@ public static partial class WebAssemblyRuntime
     /// <returns>A <see cref="JSObject"/> representing the result of this expression.</returns>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [JSImport("globalThis.window.eval")]
-    public static partial JSObject ObjectFromJs(string js);
+    public static partial JSObject JSObjectFromJs(string js);
 
     /// <summary>
     /// Gets an object from a JavaScript expression.
@@ -148,7 +151,7 @@ public static partial class WebAssemblyRuntime
     /// <returns>A <see cref="JSObject"/> representing the result of this expression, or <see langword="null"/> if the JavaScript result is <c>null</c> or <c>undefined</c>.</returns>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [JSImport("globalThis.window.eval")]
-    public static partial JSObject? ObjectOrNullFromJs(string js);
+    public static partial JSObject? JSObjectOrNullFromJs(string js);
 
     /// <summary>
     /// Gets a string from a JavaScript expression.
@@ -398,5 +401,67 @@ public static partial class WebAssemblyRuntime
             return null;
         }
         return decimal.Parse(result);
+    }
+}
+
+/// <summary>
+/// Methods used by source generators for JavaScript interop. Do not use them directly.
+/// </summary>
+/// <typeparam name="T"></typeparam>
+[EditorBrowsable(EditorBrowsableState.Never)]
+public static class WebAssemblyRuntime<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)] T>
+{
+    /// <summary>
+    /// Gets a <typeparamref name="T"/> from a JavaScript expression.
+    /// </summary>
+    /// <param name="js">The JavaScript expression.</param>
+    /// <returns>A <typeparamref name="T"/> resulting from this expression.</returns>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public static T ValueFromJs(string js)
+    {
+        return _valueFromJs(js);
+    }
+
+    /// <summary>
+    /// Gets a <typeparamref name="T"/> from a JavaScript expression.
+    /// </summary>
+    /// <param name="js">The JavaScript expression.</param>
+    /// <returns>A <typeparamref name="T"/> resulting from this expression, or <see langword="null"/> if the JavaScript result is <c>null</c> or <c>undefined</c>.</returns>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public static T? ValueOrNullFromJs(string js)
+    {
+        return _valueOrNullFromJs(js);
+    }
+
+    private static readonly Func<string, T> _valueFromJs;
+    private static readonly Func<string, T?> _valueOrNullFromJs;
+
+    static WebAssemblyRuntime()
+    {
+        if (typeof(JsObject).IsAssignableFrom(typeof(T)))
+        {
+            var method = typeof(T).GetMethod(nameof(JsObject.FromExpression), BindingFlags.Public | BindingFlags.Static)!;
+            _valueOrNullFromJs = (Func<string, T?>)Delegate.CreateDelegate(typeof(Func<string, T?>), method, true)!;
+            _valueFromJs = (Func<string, T>)_valueOrNullFromJs;
+        }
+        else if (typeof(T).IsPrimitive || typeof(T) == typeof(string))
+        {
+            var method = typeof(WebAssemblyRuntime).GetMethod($"{typeof(T).Name}FromJs", BindingFlags.Public | BindingFlags.Static, new[] { typeof(string) })!;
+            var nullableMethod = typeof(WebAssemblyRuntime).GetMethod($"{typeof(T).Name}OrNullFromJs", BindingFlags.Public | BindingFlags.Static, new[] { typeof(string) })!;
+            _valueFromJs = (Func<string, T>)Delegate.CreateDelegate(typeof(Func<string, T>), method, true)!;
+            if (typeof(T).IsValueType)
+            {
+                // For value types, T? is the same as T in generic contexts.
+                _valueOrNullFromJs = _valueFromJs;
+            }
+            else
+            {
+                _valueOrNullFromJs = (Func<string, T?>)Delegate.CreateDelegate(typeof(Func<string, T?>), nullableMethod, true)!;
+            }
+        }
+        else
+        {
+            throw new NotSupportedException($"The type {typeof(T).FullName} is not supported for JavaScript interop.");
+        }
     }
 }
