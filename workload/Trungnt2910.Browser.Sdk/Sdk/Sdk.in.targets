@@ -29,7 +29,7 @@
       TargetingPackName="Trungnt2910.Browser.Ref"
       TargetingPackVersion="**FromWorkload**"
       RuntimePackNamePatterns="Trungnt2910.Browser.Runtime"
-      RuntimePackRuntimeIdentifiers="browser-wasm"
+      RuntimePackRuntimeIdentifiers="browser-wasm;win-x64;win-x86;linux-x64;linux-x86;osx-x64"
       Profile="Browser"
     />
   </ItemGroup>
@@ -55,12 +55,21 @@
   <PropertyGroup>
     <_BrowserIsExe>false</_BrowserIsExe>
     <_BrowserIsExe Condition="$(OutputType.Equals('exe', StringComparison.InvariantCultureIgnoreCase)) or $(OutputType.Equals('winexe', StringComparison.InvariantCultureIgnoreCase))">true</_BrowserIsExe>
-    <RuntimeIdentifier>browser-wasm</RuntimeIdentifier>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(IsTestProject)' == 'true'">
+    <SelfContained>true</SelfContained>
+    <RuntimeIdentifier Condition=" '$(RuntimeIdentifier)' == '' and $([MSBuild]::IsOsPlatform('Windows')) and '$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)' == 'X64' ">win-x64</RuntimeIdentifier>
+    <RuntimeIdentifier Condition=" '$(RuntimeIdentifier)' == '' and $([MSBuild]::IsOsPlatform('Windows')) and '$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)' == 'X86' ">win-x86</RuntimeIdentifier>
+    <RuntimeIdentifier Condition=" '$(RuntimeIdentifier)' == '' and $([MSBuild]::IsOsPlatform('Linux')) and '$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)' == 'X64' ">linux-x64</RuntimeIdentifier>
+    <RuntimeIdentifier Condition=" '$(RuntimeIdentifier)' == '' and $([MSBuild]::IsOsPlatform('Linux')) and '$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)' == 'X86' ">linux-x86</RuntimeIdentifier>
+    <RuntimeIdentifier Condition=" '$(RuntimeIdentifier)' == '' and $([MSBuild]::IsOsPlatform('OSX')) and '$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)' == 'X64' ">osx-x64</RuntimeIdentifier>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(_BrowserIsExe)' == 'true'">
     <!-- Must be self-contained. Framework-dependent builds cannot see our custom runtime. -->
     <SelfContained>true</SelfContained>
+    <RuntimeIdentifier>browser-wasm</RuntimeIdentifier>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(_BrowserIsExe)' == 'false'">

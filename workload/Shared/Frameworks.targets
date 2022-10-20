@@ -25,7 +25,7 @@
         Files="@(_AssemblyFiles)"
         FileClassifications="@(_Classifications)"
         TargetFile="%(_FrameworkListFile.Identity)"
-        TargetFilePrefixes="ref;runtimes/browser-wasm/lib"
+        TargetFilePrefixes="ref;runtimes"
         RootAttributes="@(_RootAttribute)"
     />
     <ItemGroup>
