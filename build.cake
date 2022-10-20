@@ -33,8 +33,7 @@ Task("Init")
     // Assign some common properties
     msbuildsettings = msbuildsettings.WithProperty("Version", version);
     msbuildsettings = msbuildsettings.WithProperty("PackageVersion", packageVersion);
-    msbuildsettings = msbuildsettings.WithProperty("Authors", "'Trung Nguyen'");
-    msbuildsettings = msbuildsettings.WithProperty("PackageLicenseUrl", "'https://github.com/trungnt2910/DotnetBrowser/blob/master/LICENSE'");
+    msbuildsettings = msbuildsettings.WithProperty("Authors", "Trung Nguyen");
     msbuildsettings = msbuildsettings.WithProperty("_BrowserVersion", version);
 });
 
@@ -93,10 +92,10 @@ Task("BuildAndPackageWorkload")
     };
 
     // Clean up the output of the manifest project first, else the old manifest may remain.
-    DotNetClean("workload/Trungnt2910.NET.Sdk.Browser/Trungnt2910.NET.Sdk.Browser.csproj", new DotNetCleanSettings() 
-    { 
+    DotNetClean("workload/Trungnt2910.NET.Sdk.Browser/Trungnt2910.NET.Sdk.Browser.csproj", new DotNetCleanSettings()
+    {
         MSBuildSettings = msbuildsettings,
-        Configuration = configuration 
+        Configuration = configuration
     });
 
     foreach (var name in packNames)
@@ -144,6 +143,32 @@ Task("UninstallWorkload")
     }
     Console.WriteLine($"Unregistering \"browser\" installed workload...");
     TargetEnvironment.UnregisterInstalledWorkload("browser");
+});
+
+Task("BuildAndPackageTestFramework")
+    .IsDependentOn("Init")
+    .Does(() =>
+{
+    var packSettings = new DotNetPackSettings
+    {
+        MSBuildSettings = msbuildsettings,
+        Configuration = configuration,
+        OutputDirectory = "out/nuget",
+    };
+
+    DotNetPack($"tests/Trungnt2910.Browser.ObservationFramework/Trungnt2910.Browser.ObservationFramework/Trungnt2910.Browser.ObservationFramework.csproj", packSettings);
+});
+
+Task("RunWorkloadTests")
+    .IsDependentOn("BuildAndPackageTestFramework")
+    .Does(() =>
+{
+    var testSettings = new DotNetTestSettings
+    {
+        Configuration = configuration,
+    };
+
+    DotNetTest("tests/Trungnt2910.Browser.Tests/Trungnt2910.Browser.Tests.csproj", testSettings);
 });
 
 // TASK TARGETS

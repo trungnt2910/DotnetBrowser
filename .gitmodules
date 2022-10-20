@@ -1,3 +1,6 @@
 [submodule "src/Gobie"]
 	path = src/Gobie
 	url = https://github.com/trungnt2910/Gobie
+[submodule "tests/Trungnt2910.Browser.ObservationFramework"]
+	path = tests/Trungnt2910.Browser.ObservationFramework
+	url = https://github.com/trungnt2910/Trungnt2910.Browser.ObservationFramework

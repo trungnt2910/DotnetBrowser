@@ -66,6 +66,15 @@ jobs:
     - name: Build and install workload
       run: dotnet cake build.cake --target=InstallWorkload --configuration=$env:BUILD_CONFIG --build-version=${{ steps.gitversion.outputs.majorMinorPatch }} --package-version=${{ steps.gitversion.outputs.semVer }}
 
+    - name: Build and package test framework
+      run: dotnet cake build.cake --target=BuildAndPackageTestFramework --configuration=$env:BUILD_CONFIG --build-version=${{ steps.gitversion.outputs.majorMinorPatch }} --package-version=${{ steps.gitversion.outputs.semVer }}
+
+    - name: Setup Microsoft Edge
+      uses: browser-actions/setup-edge@latest
+
+    - name: Run workload tests
+      run: dotnet cake build.cake --target=RunWorkloadTests --configuration=$env:BUILD_CONFIG --build-version=${{ steps.gitversion.outputs.majorMinorPatch }} --package-version=${{ steps.gitversion.outputs.semVer }}
+
     - name: Build and publish sample app
       run: dotnet publish sample/Trungnt2910.Browser.Sample/Trungnt2910.Browser.Sample.csproj --configuration $env:BUILD_CONFIG -p:Version=${{ steps.gitversion.outputs.assemblySemVer }} --framework=net7.0-browser
 
