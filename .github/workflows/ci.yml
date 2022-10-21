@@ -28,6 +28,7 @@ jobs:
       BUILD_CONFIG: 'Release'
 
     runs-on: windows-latest
+    continue-on-error: true
 
     steps:
     - name: Checkout
@@ -73,7 +74,13 @@ jobs:
       uses: browser-actions/setup-edge@latest
 
     - name: Run workload tests
-      run: dotnet cake build.cake --target=RunWorkloadTests --configuration=$env:BUILD_CONFIG --build-version=${{ steps.gitversion.outputs.majorMinorPatch }} --package-version=${{ steps.gitversion.outputs.semVer }}
+      uses: trungnt2910/retry@6f435f22ad3f826a2fee71d007c8a2bf68022197
+      continue-on-error: true
+      with:
+        timeout_minutes: 15
+        max_attempts: 5
+        retry_on: timeout
+        command: dotnet cake build.cake --target=RunWorkloadTests --configuration=$env:BUILD_CONFIG --build-version=${{ steps.gitversion.outputs.majorMinorPatch }} --package-version=${{ steps.gitversion.outputs.semVer }}
 
     - name: Build and publish sample app
       run: dotnet publish sample/Trungnt2910.Browser.Sample/Trungnt2910.Browser.Sample.csproj --configuration $env:BUILD_CONFIG -p:Version=${{ steps.gitversion.outputs.assemblySemVer }} --framework=net7.0-browser
