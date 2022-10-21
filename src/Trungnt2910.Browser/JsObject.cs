@@ -137,6 +137,11 @@ public partial class JsObject : IConvertible
         {
             case null:
                 return "null";
+            case bool:
+                // Special case for booleans:
+                // The default C# converter converts a `true` value to `"True"` and `false` value to `"False"`,
+                // but JavaScript uses `"true"` and `"false"` (without a capital letter).
+                return (bool)obj ? "true" : "false";
             case sbyte:
             case byte:
             case short:

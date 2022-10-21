@@ -56,7 +56,7 @@ namespace Trungnt2910.Browser {
                 return index;
             }
 
-            if (!obj) {
+            if (obj === null || obj === undefined) {
                 return null;
             }
 

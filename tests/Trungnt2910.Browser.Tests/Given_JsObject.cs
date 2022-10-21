@@ -42,4 +42,11 @@ public class Given_JsObject : Specification
         // _windowInstance is constructed in Window's context.
         Assert.True(ReferenceEquals(_windowInstance, Window.FromExpression("window")));
     }
+
+    [Observation]
+    public void When_BooleanToJsObjectString()
+    {
+        Assert.Equal("true", JsObject.ToJsObjectString(true));
+        Assert.Equal("false", JsObject.ToJsObjectString(false));
+    }
 }

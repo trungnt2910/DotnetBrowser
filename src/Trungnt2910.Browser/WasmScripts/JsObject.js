@@ -34,7 +34,7 @@ var Trungnt2910;
                     JsObject._referenceCount[index] = 0;
                     return index;
                 }
-                if (!obj) {
+                if (obj === null || obj === undefined) {
                     return null;
                 }
                 JsObject.ReferencedObjects.push(obj);
