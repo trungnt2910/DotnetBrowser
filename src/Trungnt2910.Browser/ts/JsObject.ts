@@ -39,6 +39,10 @@ namespace Trungnt2910.Browser {
         }
 
         public static CreateHandle(obj: any): number | null {
+            if (obj === null || obj === undefined) {
+                return null;
+            }
+
             if (JsObject._referencedObjectsMap.has(obj)) {
                 const index = JsObject._referencedObjectsMap.get(obj);
                 if (index === undefined) {
@@ -54,10 +58,6 @@ namespace Trungnt2910.Browser {
                 JsObject._referencedObjectsMap.set(obj, index);
                 JsObject._referenceCount[index] = 0;
                 return index;
-            }
-
-            if (!obj) {
-                return null;
             }
 
             JsObject.ReferencedObjects.push(obj);
