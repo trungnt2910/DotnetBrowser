@@ -1,5 +1,7 @@
 # Dotnet Browser - custom TFM and workload for .NET 7
 
+[![CI](https://github.com/trungnt2910/DotnetBrowser/actions/workflows/ci.yml/badge.svg)](https://github.com/trungnt2910/DotnetBrowser/actions/workflows/ci.yml)
+
 An attempt to create a .NET SDK workload that provides the `net7.0-browser` TFM.
 
 ## Features
