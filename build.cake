@@ -171,6 +171,20 @@ Task("RunWorkloadTests")
     DotNetTest("tests/Trungnt2910.Browser.Tests/Trungnt2910.Browser.Tests.csproj", testSettings);
 });
 
+Task("BuildAndPackageAdditionalNuGetPackages")
+    .IsDependentOn("Init")
+    .Does(() =>
+{
+    var packSettings = new DotNetPackSettings
+    {
+        MSBuildSettings = msbuildsettings,
+        Configuration = configuration,
+        OutputDirectory = "out/nuget",
+    };
+
+    DotNetPack("sample/Rickroller/Rickroller.csproj", packSettings);
+});
+
 // TASK TARGETS
 
 Task("Default")

@@ -7,5 +7,7 @@
     <_BrowserRootDirectory>$(MSBuildThisFileDirectory)</_BrowserRootDirectory>
     <_BrowserMonoWasmVersion Condition=" '$(_BrowserMonoWasmVersion)' == '' ">7.0.0-rc.2.22472.3</_BrowserMonoWasmVersion>
     <_BrowserManifestVersionBand Condition=" '$(_BrowserManifestVersionBand)' == '' ">7.0.100</_BrowserManifestVersionBand>
+
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 </Project>

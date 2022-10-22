@@ -4,7 +4,11 @@
   <Import Project="../Shared/Frameworks.targets" />
 
   <PropertyGroup>
-    <Description>Dotnet Browser targeting pack</Description>
+    <Description>
+.NET Browser targeting pack
+$(Description)
+    </Description>
+    <IncludeSymbols>false</IncludeSymbols>
   </PropertyGroup>
 
   <ItemGroup>

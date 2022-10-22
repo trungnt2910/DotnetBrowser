@@ -3,7 +3,10 @@
   <Import Project="../Shared/Common.targets" />
 
   <PropertyGroup>
-    <Description>Dotnet Browser SDK. Enabled via the net7.0-browser TFM.</Description>
+    <Description>
+.NET Browser SDK. Enabled via the $(_BrowserTfm) TFM.
+$(Description)
+    </Description>
   </PropertyGroup>
 
   <ItemGroup>

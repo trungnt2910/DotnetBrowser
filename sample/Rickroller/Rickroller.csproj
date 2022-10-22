@@ -1,20 +1,26 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net7.0-windows;net7.0-browser</TargetFrameworks>
+    <TargetFrameworks>net$(_BrowserNetVersion)-windows;net$(_BrowserNetVersion)-browser</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Authors>trungnt2910</Authors>
     <Title>Rickroller</Title>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/trungnt2910/DotnetBrowser</PackageProjectUrl>
+    <PackageProjectUrl>https://trungnt2910.github.io/DotnetBrowser</PackageProjectUrl>
     <Description>
-A cross platform rickroller demonstrating the use of multitargeting with net6.0-browser TFM.
+A cross platform rickroller demonstrating the use of multitargeting with $(_BrowserTfm) TFM.
     </Description>
     <Copyright>Copyright (C) 2022 Trung Nguyen</Copyright>
     <PackageTags>rickroll;rick;astley;never;gonna;give;you;up;wasm;browser</PackageTags>
     <RepositoryUrl>https://github.com/trungnt2910/DotnetBrowser</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+    <None Include="LICENSE.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
 
 </Project>

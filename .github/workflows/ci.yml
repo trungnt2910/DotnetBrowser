@@ -20,6 +20,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  packages: write
 
 jobs:
   build:
@@ -70,6 +71,9 @@ jobs:
     - name: Build and package test framework
       run: dotnet cake build.cake --target=BuildAndPackageTestFramework --configuration=$env:BUILD_CONFIG --build-version=${{ steps.gitversion.outputs.majorMinorPatch }} --package-version=${{ steps.gitversion.outputs.semVer }}
 
+    - name: Build and package additional libraries
+      run: dotnet cake build.cake --target=BuildAndPackageAdditionalNuGetPackages --configuration=$env:BUILD_CONFIG --build-version=${{ steps.gitversion.outputs.majorMinorPatch }} --package-version=${{ steps.gitversion.outputs.semVer }}
+
     - name: Build and publish sample app
       run: dotnet publish sample/Trungnt2910.Browser.Sample/Trungnt2910.Browser.Sample.csproj --configuration $env:BUILD_CONFIG -p:Version=${{ steps.gitversion.outputs.assemblySemVer }} --framework=net7.0-browser
 
@@ -98,6 +102,12 @@ jobs:
         max_attempts: 5
         retry_on: timeout
         command: dotnet cake build.cake --target=RunWorkloadTests --configuration=$env:BUILD_CONFIG --build-version=${{ steps.gitversion.outputs.majorMinorPatch }} --package-version=${{ steps.gitversion.outputs.semVer }}
+
+    - name: Publish on GitHub
+      if: ${{ github.event_name != 'pull_request' }}
+      run: |
+        dotnet nuget add source --username ${{ github.repository_owner }} --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
+        dotnet nuget push out/nuget/** --api-key ${{ secrets.GITHUB_TOKEN }} --source "github"
 
     # - name: Publish dev
     #   if: github.ref == 'refs/heads/master'

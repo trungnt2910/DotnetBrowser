@@ -4,7 +4,10 @@
 
   <PropertyGroup>
     <PackageId>$(PackageId).Manifest-$(_BrowserManifestVersionBand)</PackageId>
-    <Description>Dotnet Browser workload manifest</Description>
+    <Description>
+.NET Browser workload manifest
+$(Description)
+    </Description>
   </PropertyGroup>
 
   <Import Project="$(_BrowserRootDirectory)eng/ReplaceText.targets" />
