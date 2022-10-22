@@ -13,8 +13,6 @@ A cross platform rickroller demonstrating the use of multitargeting with $(_Brow
     </Description>
     <Copyright>Copyright (C) 2022 Trung Nguyen</Copyright>
     <PackageTags>rickroll;rick;astley;never;gonna;give;you;up;wasm;browser</PackageTags>
-    <RepositoryUrl>https://github.com/trungnt2910/DotnetBrowser</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 

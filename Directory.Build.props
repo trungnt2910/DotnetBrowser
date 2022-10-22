@@ -8,6 +8,8 @@
     <_BrowserMonoWasmVersion Condition=" '$(_BrowserMonoWasmVersion)' == '' ">7.0.0-rc.2.22472.3</_BrowserMonoWasmVersion>
     <_BrowserManifestVersionBand Condition=" '$(_BrowserManifestVersionBand)' == '' ">7.0.100</_BrowserManifestVersionBand>
 
+    <RepositoryUrl Condition=" '$(RepositoryUrl)' == '' ">https://github.com/trungnt2910/DotnetBrowser</RepositoryUrl>
+    <RepositoryType Condition=" '$(RepositoryType)' == '' ">git</RepositoryType>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 </Project>

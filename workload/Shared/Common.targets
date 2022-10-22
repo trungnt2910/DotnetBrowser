@@ -23,8 +23,6 @@ To install .NET Browser, please use the installer scripts from the project's web
     </Description>
     <Copyright>Copyright (C) 2022 Trung Nguyen</Copyright>
     <PackageTags>browser;wasm</PackageTags>
-    <RepositoryUrl>https://github.com/trungnt2910/DotnetBrowser</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
