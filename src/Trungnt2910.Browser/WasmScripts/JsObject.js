@@ -19,6 +19,9 @@ var Trungnt2910;
                 JsObject._managedDispatchRejected = exports.Trungnt2910.Browser.Promise.DispatchRejected;
             }
             static CreateHandle(obj) {
+                if (obj === null || obj === undefined) {
+                    return null;
+                }
                 if (JsObject._referencedObjectsMap.has(obj)) {
                     const index = JsObject._referencedObjectsMap.get(obj);
                     if (index === undefined) {
@@ -33,9 +36,6 @@ var Trungnt2910;
                     JsObject._referencedObjectsMap.set(obj, index);
                     JsObject._referenceCount[index] = 0;
                     return index;
-                }
-                if (obj === null || obj === undefined) {
-                    return null;
                 }
                 JsObject.ReferencedObjects.push(obj);
                 const index = JsObject.ReferencedObjects.length - 1;

@@ -49,4 +49,18 @@ public class Given_JsObject : Specification
         Assert.Equal("true", JsObject.ToJsObjectString(true));
         Assert.Equal("false", JsObject.ToJsObjectString(false));
     }
+
+    [Observation]
+    public void When_UndefinedFromExpressionAfterGarbageCollection()
+    {
+        int? handle = WebAssemblyRuntime.Int32OrNullFromJs("Trungnt2910.Browser.JsObject.CreateHandle({})");
+        Assert.NotNull(handle);
+        // Simulates a JsObject being created.
+        WebAssemblyRuntime.InvokeJS($"Trungnt2910.Browser.JsObject.IncrementReferenceCount({handle})");
+        // Simulates a JsObject being finalized.
+        WebAssemblyRuntime.InvokeJS($"Trungnt2910.Browser.JsObject.DecrementReferenceCount({handle})");
+
+        // Now there should be a "undefined" slot in the JavaScript object pool.
+        Assert.Null(JsObject.FromExpression("undefined"));
+    }
 }
