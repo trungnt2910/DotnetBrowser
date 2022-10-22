@@ -92,7 +92,7 @@ jobs:
       run: msedge
 
     - name: Run workload tests
-      uses: trungnt2910/retry@98283a392bcde219c965f5ed10e31ec4eef2f4da
+      uses: trungnt2910/retry@9685ccb9a1f6bb6fff53c5e7639a39b743f7527a
       with:
         timeout_minutes: 15
         max_attempts: 5
