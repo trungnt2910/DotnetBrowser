@@ -16,8 +16,11 @@ internal sealed class NumericPropertyGenerator : GobieClassGenerator
 
     public string Comments { get; set; } = "To be added.";
 
+    public string SuppressWarnings { get; set; } = string.Empty; 
+
     [GobieTemplate]
     const string Template = @"
+        #pragma warning disable {{SuppressWarnings}}
         /// <summary>
         /// {{Comments}}
         /// </summary>
@@ -26,6 +29,7 @@ internal sealed class NumericPropertyGenerator : GobieClassGenerator
             get => global::Trungnt2910.Browser.WebAssemblyRuntime.{{Type}}OrNullFromJs($""{_jsThis}.{{JsName}}"");
             set => global::Trungnt2910.Browser.WebAssemblyRuntime.InvokeJS($""{_jsThis}.{{JsName}} = {value}"");
         }
+        #pragma warning restore {{SuppressWarnings}}
     ";
 }
 
@@ -43,11 +47,15 @@ internal sealed class NumericReadOnlyPropertyGenerator : GobieClassGenerator
 
     public string Comments { get; set; } = "To be added.";
 
+    public string SuppressWarnings { get; set; } = string.Empty;
+
     [GobieTemplate]
     const string Template = @"
+        #pragma warning disable {{SuppressWarnings}}
         /// <summary>
         /// {{Comments}}
         /// </summary>
         public {{Type}}? {{Name}} => global::Trungnt2910.Browser.WebAssemblyRuntime.{{Type}}OrNullFromJs($""{_jsThis}.{{JsName}}"");
+        #pragma warning restore {{SuppressWarnings}}
     ";
 }

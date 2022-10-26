@@ -13,8 +13,11 @@ internal sealed class StringPropertyGenerator : GobieClassGenerator
 
     public string Comments { get; set; } = "To be added.";
 
+    public string SuppressWarnings { get; set; } = string.Empty;
+
     [GobieTemplate]
     const string Template = @"
+        #pragma warning disable {{SuppressWarnings}}
         /// <summary>
         /// {{Comments}}
         /// </summary>
@@ -23,6 +26,7 @@ internal sealed class StringPropertyGenerator : GobieClassGenerator
             get => global::Trungnt2910.Browser.WebAssemblyRuntime.StringOrNullFromJs($""{_jsThis}.{{JsName}}"");
             set => global::Trungnt2910.Browser.WebAssemblyRuntime.InvokeJS($""{_jsThis}.{{JsName}} = { ((value == null) ? ""null"" : $""\""{(global::Trungnt2910.Browser.WebAssemblyRuntime.EscapeJs(value))}\"""") } "");
         }
+        #pragma warning restore {{SuppressWarnings}}
     ";
 }
 
@@ -37,11 +41,15 @@ internal sealed class StringReadOnlyPropertyGenerator : GobieClassGenerator
 
     public string Comments { get; set; } = "To be added.";
 
+    public string SuppressWarnings { get; set; } = string.Empty;
+
     [GobieTemplate]
     const string Template = @"
+        #pragma warning disable {{SuppressWarnings}}
         /// <summary>
         /// {{Comments}}
         /// </summary>
         public string? {{Name}} => global::Trungnt2910.Browser.WebAssemblyRuntime.StringOrNullFromJs($""{_jsThis}.{{JsName}}"");
+        #pragma warning restore {{SuppressWarnings}}
     ";
 }

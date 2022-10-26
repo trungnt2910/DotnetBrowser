@@ -92,6 +92,8 @@ internal class MethodGeneratorGeneratorHandler : IHandler
 
     public string Comments {{ get; set; }} = ""To be added"";
 
+    public string SuppressWarnings {{ get; set; }} = string.Empty;
+
     [global::Gobie.GobieTemplate]
     const string Template = {processedTemplate};
 }}");

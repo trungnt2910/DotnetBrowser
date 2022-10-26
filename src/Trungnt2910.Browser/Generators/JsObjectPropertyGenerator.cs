@@ -16,8 +16,11 @@ internal sealed class JsObjectPropertyGenerator : GobieClassGenerator
 
     public string Comments { get; set; } = "To be added.";
 
+    public string SuppressWarnings { get; set; } = string.Empty;
+
     [GobieTemplate]
     const string Template = @"
+        #pragma warning disable {{SuppressWarnings}}
         /// <summary>
         /// {{Comments}}
         /// </summary>
@@ -26,6 +29,7 @@ internal sealed class JsObjectPropertyGenerator : GobieClassGenerator
             get => {{Type}}.FromExpression($""{_jsThis}.{{JsName}}"");
             set => global::Trungnt2910.Browser.WebAssemblyRuntime.InvokeJS($""{_jsThis}.{{JsName}} = {value?._jsThis ?? ""null""}"");
         }
+        #pragma warning restore {{SuppressWarnings}}
     ";
 }
 
@@ -43,11 +47,15 @@ internal sealed class JsObjectReadOnlyPropertyGenerator : GobieClassGenerator
 
     public string Comments { get; set; } = "To be added.";
 
+    public string SuppressWarnings { get; set; } = string.Empty;
+
     [GobieTemplate]
     const string Template = @"
+        #pragma warning disable {{SuppressWarnings}}
         /// <summary>
         /// {{Comments}}
         /// </summary>
         public {{Type}}? {{Name}} => {{Type}}.FromExpression($""{_jsThis}.{{JsName}}"");
+        #pragma warning restore {{SuppressWarnings}}
     ";
 }
