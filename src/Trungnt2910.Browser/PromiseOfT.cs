@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -50,4 +51,30 @@ public partial class Promise<[DynamicallyAccessedMembers(DynamicallyAccessedMemb
     }
 
     private static readonly MethodInfo? _fromHandle = typeof(T).GetMethod(nameof(FromHandle), BindingFlags.Static | BindingFlags.Public);
+}
+
+/// <summary>
+/// Used by TypeScript code for types that look like a <see cref="Promise{T}"/>.
+/// </summary>
+[JsObject]
+[EditorBrowsable(EditorBrowsableState.Never)]
+public partial class PromiseLike<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)] T>: PromiseLike
+{
+    /// <summary>
+    /// Converts this <see cref="PromiseLike{T}"/> instance to a <see cref="Promise{T}"/>.
+    /// </summary>
+    /// <param name="self">The <see cref="PromiseLike{T}"/> instance.</param>
+    public static implicit operator Promise<T>(PromiseLike<T> self)
+    {
+        return self.Cast<Promise<T>>();
+    }
+
+    /// <summary>
+    /// Converts this <see cref="Promise{T}"/> instance to a <see cref="PromiseLike{T}"/>.
+    /// </summary>
+    /// <param name="self">The <see cref="Promise{T}"/> instance.</param>
+    public static implicit operator PromiseLike<T>(Promise<T> self)
+    {
+        return self.Cast<PromiseLike<T>>();
+    }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.JavaScript;
 using System.Threading.Tasks;
@@ -86,5 +87,31 @@ public partial class Promise: JsObject
             tcs.SetException(exception ?? new JSException("An unspecified error has occurred during JavaScript promise handling."));
             _taskCompletionSources.Remove(handle);
         }
+    }
+}
+
+/// <summary>
+/// Used by TypeScript code for types that look like a <see cref="Promise"/>.
+/// </summary>
+[JsObject]
+[EditorBrowsable(EditorBrowsableState.Never)]
+public partial class PromiseLike: JsObject
+{
+    /// <summary>
+    /// Converts this <see cref="PromiseLike"/> instance to a <see cref="Promise"/>.
+    /// </summary>
+    /// <param name="self">The <see cref="PromiseLike"/> instance.</param>
+    public static implicit operator Promise(PromiseLike self)
+    {
+        return self.Cast<Promise>();
+    }
+
+    /// <summary>
+    /// Converts this <see cref="Promise"/> instance to a <see cref="PromiseLike"/>.
+    /// </summary>
+    /// <param name="self">The <see cref="Promise"/> instance.</param>
+    public static implicit operator PromiseLike(Promise self)
+    {
+        return self.Cast<PromiseLike>();
     }
 }

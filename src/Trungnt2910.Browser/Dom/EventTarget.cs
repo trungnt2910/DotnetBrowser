@@ -10,9 +10,6 @@ namespace Trungnt2910.Browser.Dom;
 /// The <see cref="EventTarget"/> interface is implemented by objects that can receive events and may have listeners for them. In other words, any target of events implements the three methods associated with this interface.
 /// </summary>
 [JsObject]
-[VoidMethod<string, JsObject>("addEventListener", "AddEventListener", Param1 = "type", Param2 = "listener", Comments = "Registers an event handler of a specific event type on the <see cref=\"EventTarget\"/>.")]
-[VoidMethod<string, JsObject, JsObject>("addEventListener", "AddEventListener", Param1 = "type", Param2 = "listener", Param3 = "options", Comments = "Registers an event handler of a specific event type on the <see cref=\"EventTarget\"/>.")]
-[VoidMethod<string, JsObject, bool>("addEventListener", "AddEventListener", Param1 = "type", Param2 = "listener", Param3 = "useCapture", Comments = "Registers an event handler of a specific event type on the <see cref=\"EventTarget\"/>.")]
 public partial class EventTarget: JsObject
 {
     private const string _jsType = "Trungnt2910.Browser.JsObject";
