@@ -32,6 +32,9 @@ jobs:
     continue-on-error: true
 
     steps:
+    - name: Support Git long paths on Windows
+      run: git config --system core.longpaths true
+
     - name: Checkout
       uses: actions/checkout@v2
       with:
