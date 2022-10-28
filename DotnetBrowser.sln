@@ -63,7 +63,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObservationHost", "tests\Tr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trungnt2910.Browser.ObservationFramework.WebSocket.Shared", "tests\Trungnt2910.Browser.ObservationFramework\Trungnt2910.Browser.ObservationFramework.WebSocket.Shared\Trungnt2910.Browser.ObservationFramework.WebSocket.Shared.csproj", "{1E880931-1CEC-438B-B04C-0EE469626B6D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trungnt2910.Browser.Tests", "tests\Trungnt2910.Browser.Tests\Trungnt2910.Browser.Tests.csproj", "{2EC5733C-073A-4689-8655-BBA8862B8312}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trungnt2910.Browser.Tests", "tests\Trungnt2910.Browser.Tests\Trungnt2910.Browser.Tests.csproj", "{2EC5733C-073A-4689-8655-BBA8862B8312}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibDomTypeScriptParser", "src\LibDomTypeScriptParser\LibDomTypeScriptParser\LibDomTypeScriptParser.csproj", "{550EEED9-41B3-4217-8CFC-871841BAD573}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -131,6 +133,10 @@ Global
 		{2EC5733C-073A-4689-8655-BBA8862B8312}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2EC5733C-073A-4689-8655-BBA8862B8312}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2EC5733C-073A-4689-8655-BBA8862B8312}.Release|Any CPU.Build.0 = Release|Any CPU
+		{550EEED9-41B3-4217-8CFC-871841BAD573}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{550EEED9-41B3-4217-8CFC-871841BAD573}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{550EEED9-41B3-4217-8CFC-871841BAD573}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{550EEED9-41B3-4217-8CFC-871841BAD573}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -154,6 +160,7 @@ Global
 		{4A9DA42E-5008-48FA-9AB6-1E2CF48CF4D9} = {3822E952-E930-4972-9474-6A6A927C4063}
 		{1E880931-1CEC-438B-B04C-0EE469626B6D} = {3822E952-E930-4972-9474-6A6A927C4063}
 		{2EC5733C-073A-4689-8655-BBA8862B8312} = {6E729401-F6AC-4A4D-A6F6-B200590D82DB}
+		{550EEED9-41B3-4217-8CFC-871841BAD573} = {00AAA5AE-73A1-4626-AE26-96524BFBFC9C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C7E38642-D6A3-451F-929A-4CAF0423329C}
