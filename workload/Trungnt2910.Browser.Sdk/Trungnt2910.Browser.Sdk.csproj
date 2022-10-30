@@ -12,6 +12,7 @@ $(Description)
   <ItemGroup>
     <None Remove="**/*.in.*" />
     <None Update="@(None)" PackagePath="" CopyToOutputDirectory="PreserveNewest" Pack="true" />
+    <None Include="$(IntermediateOutputPath)Sdk.targets" Link="Sdk/Sdk.targets" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath="Sdk" Visible="false" />
   </ItemGroup>
 
   <Import Project="$(_BrowserRootDirectory)eng/ReplaceText.targets" />
@@ -25,7 +26,6 @@ $(Description)
     <ReplaceText Input="$(IntermediateOutputPath)Sdk.targets" Output="$(IntermediateOutputPath)Sdk.targets" OldValue="@BROWSERMONOWASMVERSION@" NewValue="$(_BrowserMonoWasmVersion)" />
 
     <ItemGroup>
-      <None Include="$(IntermediateOutputPath)Sdk.targets" Link="Sdk/Sdk.targets" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath="Sdk" Visible="false" />
       <FileWrites Include="$(IntermediateOutputPath)Sdk.targets" />
     </ItemGroup>
   
