@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -39,7 +40,7 @@ public partial class Promise<[DynamicallyAccessedMembers(DynamicallyAccessedMemb
             {
                 if (_fromHandle != null)
                 {
-                    return (T?)_fromHandle.Invoke(null, new object[] {task.Result.Value});
+                    return (T?)_fromHandle.Invoke(null, new object[] { (IntPtr)task.Result.Value });
                 }
                 // The harm's already done: A handle has already been created on the JavaScript
                 // side, so we'll just have to consume it with a JsObject.
