@@ -9,15 +9,15 @@ internal sealed class JsObjectGenerator: GobieClassGenerator
     const string ClassTemplate = @"
         private static readonly global::System.Collections.Generic.Dictionary<int, global::System.WeakReference<{{ClassName}}>> _objectCache = new();
 
+        [global::System.Runtime.CompilerServices.MethodImpl(global::System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+        internal {{ClassNameWithoutGenericParameters}}(int handle) : base(handle) {}
+
         /// <summary>
         /// Constructs a <see cref=""{{ClassNameWithoutGenericParameters}}""/> from a JavaScript handle.
         /// </summary>
         /// <param name=""handle"">The JavaScript handle</param>
-        /// <remarks>
-        /// This constructor is for internal purposes only. The preferred way of getting
-        /// an object from a handle is <see cref=""FromHandle(int)""/>
-        /// </remarks>
-        protected {{ClassNameWithoutGenericParameters}}(int handle) : base(handle) {}
+        [global::System.Runtime.CompilerServices.MethodImpl(global::System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+        protected {{ClassNameWithoutGenericParameters}}(global::System.IntPtr handle) : this((int)handle) {}
 
         /// <summary>
         /// Creates a <see cref=""{{ClassNameWithoutGenericParameters}}""/> from a <see cref=""global::System.Runtime.InteropServices.JavaScript.JSObject""/>.
@@ -59,13 +59,8 @@ internal sealed class JsObjectGenerator: GobieClassGenerator
             return FromHandle(objectHandle.Value);
         }
 
-        /// <summary>
-        /// Returns a <see cref=""{{ClassNameWithoutGenericParameters}}""/> from a JavaScript handle.
-        /// </summary>
-        /// <param name=""objectHandle"">The JavaScript handle.</param>
-        /// <returns>A <see cref=""{{ClassNameWithoutGenericParameters}}""/> or <see langword=""null""/> if the handle is invalid.</returns>
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        new public static {{ClassName}} FromHandle(int objectHandle)
+        new internal static {{ClassName}} FromHandle(int objectHandle)
         {
             {{ClassName}}? obj;
             if (_objectCache.TryGetValue(objectHandle, out var weakReference))
@@ -83,16 +78,25 @@ internal sealed class JsObjectGenerator: GobieClassGenerator
             return obj;
         }
 
+        /// <summary>
+        /// Returns a <see cref=""{{ClassNameWithoutGenericParameters}}""/> from a JavaScript handle.
+        /// </summary>
+        /// <param name=""objectHandle"">The JavaScript handle.</param>
+        /// <returns>A <see cref=""{{ClassNameWithoutGenericParameters}}""/> or <see langword=""null""/> if the handle is invalid.</returns>
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        [global::System.Runtime.CompilerServices.MethodImpl(global::System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+        new public static {{ClassName}} FromHandle(global::System.IntPtr objectHandle) => FromHandle((int)objectHandle);
+
         partial void FinalizerPartial();
 
         /// <inheritdoc/>
         ~{{ClassNameWithoutGenericParameters}}()
         {
-            if (_objectCache.TryGetValue(JsHandle, out var reference) && 
+            if (_objectCache.TryGetValue(_jsHandle, out var reference) && 
                 reference.TryGetTarget(out {{ClassName}}? obj) && 
                 ReferenceEquals(obj, this))
             {
-                _objectCache.Remove(JsHandle);
+                _objectCache.Remove(_jsHandle);
             }
 
             FinalizerPartial();

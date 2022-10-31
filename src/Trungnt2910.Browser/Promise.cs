@@ -42,8 +42,8 @@ public partial class Promise: JsObject
     private Task GetTaskForThis()
     {
         var tcs = new TaskCompletionSource<int?>();
-        _taskCompletionSources.Add(JsHandle, tcs);
-        SetupPromiseHandlers(JsHandle);
+        _taskCompletionSources.Add(_jsHandle, tcs);
+        SetupPromiseHandlers(_jsHandle);
         return ProcessTaskReturnValue(tcs.Task);
     }
 
