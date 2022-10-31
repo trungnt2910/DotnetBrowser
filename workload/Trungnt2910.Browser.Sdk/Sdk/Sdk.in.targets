@@ -80,18 +80,12 @@
 
   <PropertyGroup>
     <_WasmMainHTMLName>$([System.IO.Path]::GetFileName('$(WasmMainHTMLPath)'))</_WasmMainHTMLName>
-    <_WasmMainHTMLName Condition="'$(_WasmMainHTMLName)' == ''">index.html</_WasmMainHTMLName>  
+    <_WasmMainHTMLName Condition="'$(_WasmMainHTMLName)' == ''">index.html</_WasmMainHTMLName>
   </PropertyGroup>
 
   <ItemGroup>
     <HostConfig Include="browser" Host="browser" html-path="$(_WasmMainHTMLName)" />
   </ItemGroup>
-
-  <Target Name="_FixMicrosoftNetCoreAppRuntimePackDir" BeforeTargets="_InitializeCommonProperties">
-    <PropertyGroup>
-      <MicrosoftNetCoreAppRuntimePackDir Condition="'$(MicrosoftNetCoreAppRuntimePackDir)' == ''">$([MSBuild]::NormalizeDirectory(%(ResolvedRuntimePack.PackageDirectory), '..', '..', 'Microsoft.NETCore.App.Runtime.Mono.browser-wasm', '@BROWSERMONOWASMVERSION@'))</MicrosoftNetCoreAppRuntimePackDir>
-    </PropertyGroup>
-  </Target>
 
   <Target Name="_WasmGenerateMainJs"
           Condition="'$(WasmGenerateAppBundle)' == 'true' and '$(WasmMainJSPath)' == ''"
@@ -123,6 +117,78 @@ await runtime.runMainAndExit(config.mainAssemblyName, []);
     <ItemGroup>
       <WasmExtraFilesToDeploy Include="$(WasmMainJSPath)" />
     </ItemGroup>
+  </Target>
+
+  <UsingTask TaskName="_GetLatestVersionAvailable"
+    TaskFactory="RoslynCodeTaskFactory"
+    AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <Path ParameterType="System.String" Required="true" />
+      <Result ParameterType="System.String" Output="true" />
+    </ParameterGroup>
+    <Task>
+      <Code Type="Fragment" Language="cs">
+<![CDATA[
+        var l = Directory.GetDirectories(Path).Select(d => System.IO.Path.GetFileName(d)).ToList();
+        l.Sort(Comparer<string>.Create((v1, v2) =>
+        {
+          var noSemV1 = v1;
+          var semIndex1 = noSemV1.IndexOf('-');
+          if (semIndex1 != -1) noSemV1 = noSemV1.Substring(0, semIndex1);
+
+          var noSemV2 = v2;
+          var semIndex2 = noSemV2.IndexOf('-');
+          if (semIndex2 != -1) noSemV2 = noSemV2.Substring(0, semIndex2);
+
+          var versionCompare = Version.Parse(noSemV1).CompareTo(Version.Parse(noSemV2));
+
+          if (versionCompare != 0)
+            return versionCompare;
+
+          if (semIndex1 == -1 && semIndex2 != -1)
+            return 1;
+
+          if (semIndex1 != -1 && semIndex2 == -1)
+            return -1;
+
+          var arr1 = v1.Substring(semIndex1).Split('.').ToList();
+          var arr2 = v2.Substring(semIndex2).Split('.').ToList();
+
+          var tagCompare = arr1[0].CompareTo(arr2[0]);
+          if (tagCompare != 0)
+            return tagCompare;
+
+          while (arr1.Count < arr2.Count)
+            arr1.Add("0");
+
+          while (arr2.Count < arr1.Count)
+            arr2.Add("0");
+
+          for (int i = 1; i < arr1.Count; ++i)
+          {
+            var partCompare = int.Parse(arr1[i]).CompareTo(int.Parse(arr2[i]));
+            if (partCompare != 0)
+              return partCompare;
+          }
+
+          return 0;
+        }));
+        Result = l.LastOrDefault();
+]]>
+      </Code>
+    </Task>
+  </UsingTask>
+
+  <Target Name="_FixMicrosoftNetCoreAppRuntimePackDir" BeforeTargets="_InitializeCommonProperties">
+    <PropertyGroup>
+      <_BrowserMonoWasmRuntimePackRootDir>$([MSBuild]::NormalizeDirectory(%(ResolvedRuntimePack.PackageDirectory), '..', '..', 'Microsoft.NETCore.App.Runtime.Mono.browser-wasm'))</_BrowserMonoWasmRuntimePackRootDir>
+    </PropertyGroup>
+    <_GetLatestVersionAvailable Path="$(_BrowserMonoWasmRuntimePackRootDir)">
+      <Output TaskParameter="Result" PropertyName="_BrowserMonoWasmRuntimePackVersion" />
+    </_GetLatestVersionAvailable>
+    <PropertyGroup>
+      <MicrosoftNetCoreAppRuntimePackDir Condition="'$(MicrosoftNetCoreAppRuntimePackDir)' == ''">$([MSBuild]::NormalizeDirectory($(_BrowserMonoWasmRuntimePackRootDir), $(_BrowserMonoWasmRuntimePackVersion)))</MicrosoftNetCoreAppRuntimePackDir>
+    </PropertyGroup>
   </Target>
 
 </Project>

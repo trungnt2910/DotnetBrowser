@@ -33,8 +33,8 @@ In the future you might need to replace `7.0` with the .NET version you're using
 The repo includes a sample project that multi-targets Windows and Browser WebAssembly.
 
 ## Built-in classes
-The project aims to provide a full binding of the browser's JavaScript API in C#.
-Currently, only a small subset of this API is implemented. You can call the implemented classes in a way similar to the code in this example:
+The project provides a full binding of the browser's DOM JavaScript API in C#.
+You can call the implemented classes in a way similar to the code in this example:
 
 ```C#
 using Trungnt2910.Browser.Dom;
@@ -47,10 +47,10 @@ Console.WriteLine(Window.Instance.Location.Href);
 // On .NET 7, you can also use `JsObject.FromSystemJSObject(JSHost.GlobalThis)`.
 var document = JsObject.FromExpression("window.document").Cast<Document>();
 
-// `createTextNode` is not implemented yet, so you must manually call the function.
+// JavaScript functions can be manually called using `InvokeMember`.
 var textNode = document.InvokeMember("createTextNode", "Hello world!");
 
-// Same for `document.body`, and `document.body.appendChild`.
+// Members can be accessed using the indexer syntax similar to JavaScript.
 document["body"].InvokeMember("appendChild", textNode);
 
 // Events are supported! Here's how you can use one of them.
@@ -84,6 +84,8 @@ Using this project, a single multi-targeted project can be created:
 .NET 6 support has been dropped after moving from Uno-based `Uno.Foundation.WebAssembly` to the official .NET `wasm-experimental` implementation, as `WebAssemblyRuntime` functions heavily depend on the new [`System.Runtime.InteropServices.JavaScript`](https://learn.microsoft.com/en-us/dotnet/api/system.runtime.interopservices.javascript?view=net-7.0&viewFallbackFrom=net-6.0) namespace, which is only available on .NET 7 or later versions.
 
 ## Plans
-- Implement all JavaScript Web API bindings on C#, either manually (easy but time consuming) or generated through TypeScript declarations (very challenging due to the numerous differences between C# and TypeScript).
+- Optimize JavaScript interop (minimize usage of `eval` and string serialization, directly copy `TypedArray`s to the runtime's memory,...).
 - Investigate WASM debugging support.
+- Source generators for more `.d.ts` files, similar to how Xamarin.Android can generate bindings from a `.jar` (currently the included generator only supports `lib.dom.d.ts` and is a separate console application).
+- Rewrite `Trungnt2910.Browser.Generators` and make it public.
 - ~~Build MAUI on top of this workload.~~ Nah, just kidding, this task is too time-consuming.

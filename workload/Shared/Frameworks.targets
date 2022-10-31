@@ -3,6 +3,7 @@
   <ItemGroup>
     <_FrameworkListFile Condition=" !$(MSBuildProjectName.Contains('.Runtime')) " Include="$(IntermediateOutputPath)FrameworkList.xml" />
     <_FrameworkListFile Condition=" !$(MSBuildProjectName.Contains('.Ref')) " Include="$(IntermediateOutputPath)RuntimeList.xml" />
+    <Content Include="@(_FrameworkListFile)" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath="data" Link="data/%(FileName)%(Extension)" />
   </ItemGroup>
 
   <Import Project="Sdk.props" Sdk="Microsoft.DotNet.SharedFramework.Sdk" Version="7.0.0-beta.22514.3" />
@@ -30,7 +31,6 @@
     />
     <ItemGroup>
       <FileWrites Include="@(_FrameworkListFile)" />
-      <Content Include="@(_FrameworkListFile)" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath="data" Link="data/%(FileName)%(Extension)" />
     </ItemGroup>
   </Target>
 

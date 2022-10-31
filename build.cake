@@ -22,6 +22,11 @@ var packNames = new List<string>()
     "Trungnt2910.Browser.Sdk"
 };
 
+var coreLibraryNames = new List<string>()
+{
+    "Trungnt2910.Browser"
+};
+
 // TASKS
 
 Task("Init")
@@ -41,11 +46,17 @@ Task("Restore")
     .IsDependentOn("Clean")
     .Does(() =>
 {
+    foreach (var name in coreLibraryNames)
+    {
+        DotNetRestore($"src/{name}/{name}.csproj");
+    }
+
     foreach (var name in packNames)
     {
         DotNetRestore($"workload/{name}/{name}.csproj");
     }
 
+    DotNetRestore("workload/Trungnt2910.NET.Sdk.Browser/Trungnt2910.NET.Sdk.Browser.csproj");
 });
 
 Task("Clean")
@@ -65,46 +76,59 @@ Task("FullClean")
     });
 });
 
-Task("Build")
+Task("BuildCoreLibraries")
     .IsDependentOn("Restore")
     .Does(() =>
 {
     var settings = new DotNetBuildSettings
     {
         Configuration = configuration,
-        MSBuildSettings = msbuildsettings
+        MSBuildSettings = msbuildsettings,
+        NoRestore = true
     };
 
-    DotNetBuild("src/Trungnt2910.Browser/Trungnt2910.Browser.csproj", settings);
+    foreach (var name in coreLibraryNames)
+    {
+        DotNetBuild($"src/{name}/{name}.csproj", settings);
+    }
 });
 
 Task("BuildAndPackageWorkload")
-    .IsDependentOn("Restore")
+    .IsDependentOn("BuildCoreLibraries")
     .Does(() =>
 {
+    var buildSettings = new DotNetBuildSettings
+    {
+        MSBuildSettings = msbuildsettings,
+        Configuration = configuration,
+        NoRestore = true,
+        // Don't build the core libraries
+        NoDependencies = true,
+        // Always re-generate files.
+        NoIncremental = true
+    };
+
     var packSettings = new DotNetPackSettings
     {
         MSBuildSettings = msbuildsettings,
         Configuration = configuration,
         OutputDirectory = "out/nuget",
-        // Some of the nugets here depend on output generated during build.
-        NoBuild = false
+        NoRestore = true,
+        NoBuild = true,
+        NoDependencies = true
     };
-
-    // Clean up the output of the manifest project first, else the old manifest may remain.
-    DotNetClean("workload/Trungnt2910.NET.Sdk.Browser/Trungnt2910.NET.Sdk.Browser.csproj", new DotNetCleanSettings()
-    {
-        MSBuildSettings = msbuildsettings,
-        Configuration = configuration
-    });
 
     foreach (var name in packNames)
     {
+        DotNetBuild($"workload/{name}/{name}.csproj", buildSettings);
         DotNetPack($"workload/{name}/{name}.csproj", packSettings);
     }
 
     foreach (var band in supportedVersionBands)
     {
+        buildSettings.MSBuildSettings = buildSettings.MSBuildSettings.WithProperty("_BrowserManifestVersionBand", band);
+        DotNetBuild("workload/Trungnt2910.NET.Sdk.Browser/Trungnt2910.NET.Sdk.Browser.csproj", buildSettings);
+
         packSettings.MSBuildSettings = packSettings.MSBuildSettings.WithProperty("_BrowserManifestVersionBand", band);
         DotNetPack("workload/Trungnt2910.NET.Sdk.Browser/Trungnt2910.NET.Sdk.Browser.csproj", packSettings);
     }
@@ -188,7 +212,6 @@ Task("BuildAndPackageAdditionalNuGetPackages")
 // TASK TARGETS
 
 Task("Default")
-    .IsDependentOn("Build")
     .IsDependentOn("BuildAndPackageWorkload");
 
 // EXECUTION

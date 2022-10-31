@@ -4,3 +4,6 @@
 [submodule "tests/Trungnt2910.Browser.ObservationFramework"]
 	path = tests/Trungnt2910.Browser.ObservationFramework
 	url = https://github.com/trungnt2910/Trungnt2910.Browser.ObservationFramework
+[submodule "src/LibDomTypeScriptParser/LibDomTypeScriptParser/TypeScript"]
+	path = src/LibDomTypeScriptParser/LibDomTypeScriptParser/TypeScript
+	url = https://github.com/microsoft/TypeScript

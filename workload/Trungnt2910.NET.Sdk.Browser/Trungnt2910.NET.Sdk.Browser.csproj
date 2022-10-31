@@ -14,6 +14,13 @@ $(Description)
 
   <ItemGroup>
     <None Update="WorkloadManifest.targets" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath="data" />
+    <None
+        Include="$(IntermediateOutputPath)WorkloadManifest.json"
+        Link="WorkloadManifest.json"
+        CopyToOutputDirectory="PreserveNewest"
+        Pack="true"
+        PackagePath="data"
+    />
   </ItemGroup>
 
   <ItemGroup>
@@ -21,9 +28,7 @@ $(Description)
   </ItemGroup>
 
   <Target Name="_ReplaceJsonText"
-      BeforeTargets="Build;AssignTargetPaths"
-      Inputs="$(MSBuildProjectFile);WorkloadManifest.in.json"
-      Outputs="$(IntermediateOutputPath)WorkloadManifest.json">
+      BeforeTargets="Build;AssignTargetPaths">
 
     <ReplaceText
         Input="WorkloadManifest.in.json"
@@ -47,13 +52,6 @@ $(Description)
     />
 
     <ItemGroup>
-      <None
-          Include="$(IntermediateOutputPath)WorkloadManifest.json"
-          Link="WorkloadManifest.json"
-          CopyToOutputDirectory="PreserveNewest"
-          Pack="true"
-          PackagePath="data"
-      />
       <FileWrites Include="$(IntermediateOutputPath)WorkloadManifest.json" />
     </ItemGroup>
 

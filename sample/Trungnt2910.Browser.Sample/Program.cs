@@ -1,10 +1,10 @@
 ﻿using System;
 #if BROWSER
 using System.Linq;
-using System.Runtime.InteropServices.JavaScript;
 using System.Threading.Tasks;
 using Trungnt2910.Browser;
 using Trungnt2910.Browser.Dom;
+using Console = System.Console;
 #elif WINDOWS
 using System.IO;
 #endif
@@ -14,7 +14,7 @@ Console.WriteLine("Hello World!");
 #if BROWSER
 Console.WriteLine(Window.Instance.Location.Href);
 
-var document = JsObject.FromExpression("window.document").Cast<Document>();
+var document = Window.Instance.Document;
 var header = document.CreateElement("h1");
 header.TextContent = "Hello World!";
 document.Body.AppendChild(header);
@@ -54,7 +54,7 @@ header.SelectStart += (sender, jsEvent) =>
 
     if (count > 10)
     {
-        JsObject.FromSystemJSObject(JSHost.GlobalThis).InvokeMember("alert", "Please stop selecting me.");
+        Window.Instance.Alert("Please stop selecting me.");
     }
 
     if (count > 15)
@@ -74,13 +74,13 @@ document.Paste += (sender, clipboardEvent) =>
         Console.WriteLine($"Pasted string: {text}");
         var jsArr = JsObject.FromExpression("[]").Cast<JsArray>();
         jsArr.Push(text.Cast<object>().ToArray());
-        Window.Instance["console"].InvokeMember("log", "Pasted characters: ", jsArr);
+        Window.Instance.Console.Log("Pasted characters: ", jsArr);
         var intArr = JsArray<int>.FromExpression("[]");
         for (int i = 0; i < text.Length; ++i)
         {
             intArr.Add(text[i]);
         }
-        Window.Instance["console"].InvokeMember("log", "Pasted characters' codes: ", intArr);
+        Window.Instance.Console.Log("Pasted characters' codes: ", intArr);
         Console.WriteLine($"Pasted characters' codes (C# side): {{{string.Join(", ", intArr)}}}");
     }
     else
@@ -105,8 +105,8 @@ var windowPromise = Promise<Window>
 var window = await windowPromise;
 Console.WriteLine($"Got a window from JavaScript: {window.Location.Href}");
 
-var fetchResult = await Window.Instance.InvokeMember("fetch", "https://www.randomnumberapi.com/api/v1.0/random?min=100&max=1000&count=5").Cast<Promise<JsObject>>();
-var fetchResultString = await fetchResult.InvokeMember("text").Cast<Promise<string>>();
+var fetchResult = await Window.Instance.Fetch("https://www.randomnumberapi.com/api/v1.0/random?min=100&max=1000&count=5", null);
+var fetchResultString = await fetchResult.Text();
 Console.WriteLine($"Array of random numbers: {fetchResultString}");
 
 await Task.Delay(-1);
