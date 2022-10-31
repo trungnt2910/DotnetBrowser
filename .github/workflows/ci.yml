@@ -80,11 +80,20 @@ jobs:
     - name: Build and publish sample app
       run: dotnet publish sample/Trungnt2910.Browser.Sample/Trungnt2910.Browser.Sample.csproj --configuration $env:BUILD_CONFIG -p:Version=${{ steps.gitversion.outputs.assemblySemVer }} --framework=net7.0-browser
 
+    - name: Build and publish azureams.github.io clone
+      run: dotnet publish sample/azureams.github.io/azureams.github.io.csproj --configuration $env:BUILD_CONFIG -p:Version=${{ steps.gitversion.outputs.assemblySemVer }} --framework=net7.0-browser
+
     - name: Publish sample app artifact
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v2
       with:
         name: sample_app
         path: sample/Trungnt2910.Browser.Sample/bin/${{ env.BUILD_CONFIG }}/net7.0-browser/browser-wasm/AppBundle
+
+    - name: Publish azureams.github.io clone artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: azureams.github.io
+        path: sample/azureams.github.io/bin/${{ env.BUILD_CONFIG }}/net7.0-browser/browser-wasm/AppBundle
 
     - name: Publish nuget artifacts
       uses: actions/upload-artifact@v2
@@ -128,9 +137,16 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Download sample app artifact
-      uses: actions/download-artifact@v1
+      uses: actions/download-artifact@v3
       with:
         name: sample_app
+        path: sample_app
+
+    - name: Download azureams.github.io clone artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: azureams.github.io
+        path: sample_app/AzureAms
 
     - name: Deploy sample to GitHub pages
       uses: JamesIves/github-pages-deploy-action@v4

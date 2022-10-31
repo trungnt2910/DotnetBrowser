@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net7.0-browser</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <RootNamespace>AzureAms.Web</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <WasmExtraFilesToDeploy Include="assets/**">
+      <TargetPath>%(RelativeDir)%(Filename)%(Extension)</TargetPath>
+    </WasmExtraFilesToDeploy>
+    <WasmExtraFilesToDeploy Include="css/*.css">
+      <TargetPath>%(RelativeDir)%(Filename)%(Extension)</TargetPath>
+    </WasmExtraFilesToDeploy>
+  </ItemGroup>
+
+</Project>

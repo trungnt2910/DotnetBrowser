@@ -22,26 +22,21 @@ public partial class JsObject : IConvertible
 
     private string? _type;
     internal readonly string _jsThis;
+    internal readonly int _jsHandle;
 
-    /// <summary>
-    /// The JavaScript handle of this object.
-    /// </summary>
-    protected readonly int JsHandle;
+    internal JsObject(int handle)
+    {
+        _jsHandle = handle;
+        IncrementReferenceCount(handle);
+        _jsThis = $"{_jsType}.ReferencedObjects[{_jsHandle}]";
+    }
 
     /// <summary>
     /// Constructs a <see cref="JsObject"/> from a JavaScript handle.
     /// </summary>
     /// <param name="handle">The JavaScript handle</param>
-    /// <remarks>
-    /// This constructor is for internal purposes only. The preferred way of getting
-    /// an object from a handle is <see cref="FromHandle(int)"/>
-    /// </remarks>
-    protected JsObject(int handle)
-    {
-        JsHandle = handle;
-        IncrementReferenceCount(handle);
-        _jsThis = $"{_jsType}.ReferencedObjects[{JsHandle}]";
-    }
+    [global::System.Runtime.CompilerServices.MethodImpl(global::System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    protected JsObject(IntPtr handle) : this((int)handle) { }
 
     [JSImport($"globalThis.{_jsType}.{nameof(IncrementReferenceCount)}")]
     internal static partial void IncrementReferenceCount(int index);
@@ -99,13 +94,8 @@ public partial class JsObject : IConvertible
         return FromHandle(objectHandle.Value);
     }
 
-    /// <summary>
-    /// Returns a <see cref="JsObject"/> from a JavaScript handle.
-    /// </summary>
-    /// <param name="objectHandle">The JavaScript handle.</param>
-    /// <returns>A <see cref="JsObject"/> or <see langword="null"/> if the handle is invalid.</returns>
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public static JsObject FromHandle(int objectHandle)
+    internal static JsObject FromHandle(int objectHandle)
     {
         JsObject? obj;
         if (_objectCache.TryGetValue(objectHandle, out WeakReference<JsObject>? weakReference))
@@ -122,6 +112,15 @@ public partial class JsObject : IConvertible
         _objectCache.Add(objectHandle, new WeakReference<JsObject>(obj));
         return obj;
     }
+
+    /// <summary>
+    /// Returns a <see cref="JsObject"/> from a JavaScript handle.
+    /// </summary>
+    /// <param name="objectHandle">The JavaScript handle.</param>
+    /// <returns>A <see cref="JsObject"/> or <see langword="null"/> if the handle is invalid.</returns>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static JsObject FromHandle(IntPtr objectHandle) => FromHandle((int)objectHandle);
 
     /// <summary>
     /// Returns the equivalent JavaScript representation of an object.
@@ -165,6 +164,11 @@ public partial class JsObject : IConvertible
                 // but it's now removed to make this library linker-friendly.
         }
     }
+
+    /// <summary>
+    /// The handle to the underlying JavaScript instance.
+    /// </summary>
+    public IntPtr Handle => (IntPtr)_jsHandle;
 
     /// <summary>
     /// Gets or sets a member of the current object.
@@ -252,7 +256,7 @@ public partial class JsObject : IConvertible
     public T Cast<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)] T>() where T : JsObject
     {
         var fromHandle = typeof(T).GetMethod(nameof(FromHandle), BindingFlags.Static | BindingFlags.Public);
-        return (T)fromHandle!.Invoke(null, new object[] { JsHandle })!;
+        return (T)fromHandle!.Invoke(null, new object[] { (IntPtr)_jsHandle })!;
     }
 
     /// <summary>
@@ -643,7 +647,7 @@ public partial class JsObject : IConvertible
     /// <returns><see langword="true"/> if the two objects refers to the same underlying JavaScript object.</returns>
     public static bool operator ==(JsObject? left, JsObject? right)
     {
-        return left?.JsHandle == right?.JsHandle;
+        return left?._jsHandle == right?._jsHandle;
     }
 
     /// <summary>
@@ -678,7 +682,7 @@ public partial class JsObject : IConvertible
     /// <inheritdoc/>
     public override int GetHashCode()
     {
-        return JsHandle;
+        return _jsHandle;
     }
     #endregion
 
@@ -688,13 +692,13 @@ public partial class JsObject : IConvertible
     /// </summary>
     ~JsObject()
     {
-        if (_objectCache.TryGetValue(JsHandle, out var reference) && 
+        if (_objectCache.TryGetValue(_jsHandle, out var reference) && 
             reference.TryGetTarget(out JsObject? obj) && 
             ReferenceEquals(obj, this))
         {
-            _objectCache.Remove(JsHandle);
+            _objectCache.Remove(_jsHandle);
         }
-        DecrementReferenceCount(JsHandle);
+        DecrementReferenceCount(_jsHandle);
     }
 
     [SuppressMessage("Usage", "CA2255:The 'ModuleInitializer' attribute should not be used in libraries", Justification = "The JS code needs to be initialized early before any type loads.")]

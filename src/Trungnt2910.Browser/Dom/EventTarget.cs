@@ -30,7 +30,7 @@ public partial class EventTarget: JsObject
 
         if (!currentEventDict.TryGetValue(type, out var currentEventTypeSet))
         {
-            SetupEventListener(JsHandle, type);
+            SetupEventListener(_jsHandle, type);
             currentEventTypeSet = new();
             currentEventDict.Add(type, currentEventTypeSet);
         }
@@ -53,7 +53,7 @@ public partial class EventTarget: JsObject
                 if (currentEventTypeSet.Count == 0)
                 {
                     currentEventDict.Remove(type);
-                    CleanupEventListener(JsHandle, type);
+                    CleanupEventListener(_jsHandle, type);
                 }
             }
             if (currentEventDict.Count == 0)
