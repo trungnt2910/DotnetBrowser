@@ -1,0 +1,197 @@
+body {
+  background-color: #f3f3f3;
+}
+
+#bg-cover {
+  position: relative;
+}
+
+#btn-container {
+  width: 98.666667%;
+}
+
+#news-container div > div > img {
+  width: 100%;
+}
+
+#btn-container button {
+  background: #131F28;
+  -webkit-box-shadow: -4px 7px 7px -1px rgba(0, 0, 0, 0.25);
+          box-shadow: -4px 7px 7px -1px rgba(0, 0, 0, 0.25);
+  border-radius: 30px;
+}
+
+#join-now-btn {
+  background: #24909d;
+  -webkit-box-shadow: -4px 7px 7px -1px rgba(0, 0, 0, 0.25);
+          box-shadow: -4px 7px 7px -1px rgba(0, 0, 0, 0.25);
+  border-radius: 30px;
+}
+
+#landing-section {
+  position: relative;
+}
+
+#landing-section #bg-img-container {
+  -webkit-filter: blur(10px);
+          filter: blur(10px);
+  background: black;
+}
+
+.hide-scroll-bar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scroll-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.core-image {
+  z-index: 2;
+}
+
+.content {
+  top: 2.5rem;
+  background: -webkit-gradient(linear, left top, left bottom, from(rgba(2, 15, 24, 0.92)), to(#020F18));
+  background: linear-gradient(180deg, rgba(2, 15, 24, 0.92) 0%, #020F18 100%);
+}
+
+.skeleton {
+  -webkit-animation: skeleton-loading 1s linear;
+          animation: skeleton-loading 1s linear;
+}
+/*# sourceMappingURL=index.css.map */
+
+#changeButton {
+  position:fixed;
+  right:30px;
+  top:0px;
+  z-index:10;
+  height: 90px;  
+  width: 65px;
+}
+
+#core {
+  color :black
+}
+
+#bvgd {
+  color: black
+}
+
+.Article {
+  background: white;
+  color: black;
+}
+
+.toggle-checkbox {
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  left: 0px;
+  bottom: 0px;
+  border-radius: 0px;
+  opacity: 0;
+  accent-color: transparent;
+  color: transparent;
+  z-index: 11;
+}
+
+.toggle-container {
+  position: relative;
+  height: 2em;
+  width: 4em;
+}
+
+.toggle-slot {
+  position: absolute;
+  z-index: 10;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  border: 5px solid #e4e7ec;
+  border-radius: 10em;
+  background-color: white;
+  transition: background-color 250ms;
+}
+
+.toggle-checkbox:checked ~ .toggle-slot {
+  background-color: black;
+  border: 5px solid #1b1813;
+}
+
+.toggle-button {
+  position: absolute;
+  top: calc(0.5em - 5px);
+  left: unset;
+  right: calc(0.5em - 5px);
+  height: 1em;
+  width: 1em;
+  border-radius: 50%;
+  background-color: #ffbb52;
+  transition: background-color 250ms, border-color 250ms, transform 500ms cubic-bezier(.26,2,.46,.71);
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .toggle-button {
+  background-color: #485367;
+  top: calc(0.5em - 5px);
+  left: calc(0.5em - 5px);
+  right: unset;
+}
+
+.sun-icon {
+  position: absolute;
+  height: 1em;
+  width: 1em;
+  color: #ffbb52;
+}
+
+.sun-icon-wrapper {
+  position: absolute;
+  top: calc(0.5em - 5px);
+  left: calc(0.5em - 5px);
+  right: unset;
+  height: 1em;
+  width: 1em;
+  opacity: 1;
+  transition: opacity 150ms, transform 500ms cubic-bezier(.26,2,.46,.71);
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .sun-icon-wrapper {
+  opacity: 0;
+  left: unset;
+  right: calc(0.5em - 5px);
+}
+
+.moon-icon {
+  position: absolute;
+  height: 1em;
+  width: 1em;
+  color: white;
+}
+
+.moon-icon-wrapper {
+  position: absolute;
+  top: calc(0.5em - 5px);
+  left: calc(0.5em - 5px);
+  right: unset;
+  height: 1em;
+  width: 1em;
+  opacity: 0;
+  transition: opacity 150ms, transform 500ms cubic-bezier(.26,2.5,.46,.71);
+}
+
+.toggle-checkbox:checked ~ .toggle-slot .moon-icon-wrapper {
+  opacity: 1;
+  top: calc(0.5em - 5px);
+  left: unset;
+  right: calc(0.5em - 5px);
+}
+
+.scaled {
+  transform: scale(0.4);
+  
+  right:0px;
+}
