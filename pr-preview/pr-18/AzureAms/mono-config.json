@@ -1,0 +1,61 @@
+{
+  "mainAssemblyName": "azureams.github.io.dll",
+  "assemblyRootFolder": "managed",
+  "debugLevel": 0,
+  "assets": [
+    {
+      "behavior": "assembly",
+      "name": "azureams.github.io.dll"
+    },
+    {
+      "behavior": "assembly",
+      "name": "System.Linq.dll"
+    },
+    {
+      "behavior": "assembly",
+      "name": "System.Private.CoreLib.dll"
+    },
+    {
+      "behavior": "assembly",
+      "name": "System.Private.Uri.dll"
+    },
+    {
+      "behavior": "assembly",
+      "name": "System.Runtime.dll"
+    },
+    {
+      "behavior": "assembly",
+      "name": "System.Runtime.InteropServices.JavaScript.dll"
+    },
+    {
+      "behavior": "assembly",
+      "name": "Trungnt2910.Browser.dll"
+    },
+    {
+      "virtualPath": "runtimeconfig.bin",
+      "behavior": "vfs",
+      "name": "supportFiles/0_runtimeconfig.bin"
+    },
+    {
+      "virtualPath": "dotnet.js.symbols",
+      "behavior": "vfs",
+      "name": "supportFiles/1_dotnet.js.symbols"
+    },
+    {
+      "loadRemote": false,
+      "behavior": "icu",
+      "name": "icudt.dat"
+    },
+    {
+      "virtualPath": "/usr/share/zoneinfo/",
+      "behavior": "vfs",
+      "name": "dotnet.timezones.blat"
+    },
+    {
+      "behavior": "dotnetwasm",
+      "name": "dotnet.wasm"
+    }
+  ],
+  "remoteSources": [],
+  "pthreadPoolSize": 0
+}
