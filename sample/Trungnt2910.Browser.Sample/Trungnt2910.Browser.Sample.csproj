@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFrameworks>net7.0-browser;net7.0-windows</TargetFrameworks>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RuntimeIdentifier Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'browser'">browser-wasm</RuntimeIdentifier>
   </PropertyGroup>
 
   <ItemGroup>
