@@ -4,6 +4,12 @@
 
 An attempt to create a .NET SDK workload that provides the `net7.0-browser` TFM.
 
+# Update
+
+[`net8.0-browser`](https://github.com/dotnet/designs/blob/main/accepted/2023/net8.0-browser-tfm.md) has now been accepted into .NET! However, we have yet to see any official plans for browser API bindings.
+
+This respository will still exist to provide the `Trungnt2910.Browser.dll` API bindings for the official `net8.0-browser` and beyond, but the workloads will not be further maintained.
+
 ## Features
 - Run .NET applications in the browser.
 - Multi-target .NET applications and libraries with other platforms, using the browser-specific `net7.0-browser` TFM.
