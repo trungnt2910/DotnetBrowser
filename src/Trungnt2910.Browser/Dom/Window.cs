@@ -21,11 +21,6 @@ namespace Trungnt2910.Browser.Dom;
 /// Generally, anything that can't reasonably pertain to a tab pertains to the window instead.
 /// </remarks>
 [JsObject]
-[JsObjectReadOnlyProperty("document", "Document", nameof(Document), Comments = "Returns a reference to the document that the window contains.")]
-[NumericReadOnlyProperty("innerHeight", "InnerHeight", "double", Comments = "Gets the height of the content area of the browser window including, if rendered, the horizontal scrollbar.")]
-[NumericReadOnlyProperty("innerWidth", "InnerWidth", "double", Comments = "Gets the width of the content area of the browser window including, if rendered, the vertical scrollbar.")]
-[JsObjectProperty("location", "Location", nameof(Location), Comments = "Gets/sets the location, or current URL, of the window object.")]
-[VoidMethod<int, int>("resizeTo", "ResizeTo", Param1 = "width", Param2 = "height", Comments = "Dynamically resizes window.")]
 public partial class Window: EventTarget
 {
     /// <summary>
