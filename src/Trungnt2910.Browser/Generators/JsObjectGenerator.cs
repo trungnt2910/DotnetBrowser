@@ -1,12 +1,21 @@
-﻿using Gobie;
+﻿#if !NOGOBIE
+using Gobie;
+#endif
 
 namespace Trungnt2910.Browser.Generators;
 
+#if !NOGOBIE
 [GobieGeneratorName($"{nameof(JsObject)}Attribute", Namespace = "Trungnt2910.Browser.Generators")]
-internal sealed class JsObjectGenerator: GobieClassGenerator
+#endif
+internal sealed class JsObjectGenerator
+#if !NOGOBIE
+    : GobieClassGenerator
+#endif
 {
+#if !NOGOBIE
     [GobieTemplate]
-    const string ClassTemplate = @"
+#endif
+    public const string ClassTemplate = @"
         private static readonly global::System.Collections.Generic.Dictionary<int, global::System.WeakReference<{{ClassName}}>> _objectCache = new();
 
         [global::System.Runtime.CompilerServices.MethodImpl(global::System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]

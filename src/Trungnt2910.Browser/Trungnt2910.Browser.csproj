@@ -49,6 +49,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <AdditionalFiles Include="..\LibDomTypeScriptParser\LibDomTypeScriptParser\TypeScript\lib\lib.dom.d.ts" NamespaceName="Trungnt2910.Browser.Dom" GlobalInterfaceName="Window" />
+  </ItemGroup>
+
+  <ItemGroup>
     <EmbeddedResource Include="LinkerDefinition.xml">
       <LogicalName>$(AssemblyName).xml</LogicalName>
     </EmbeddedResource>
@@ -56,6 +60,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Trungnt2910.Browser.Generators\Trungnt2910.Browser.Generators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\Trungnt2910.Browser.Generators.TypeScript\Trungnt2910.Browser.Generators.TypeScript.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     <ProjectReference Include="..\Trungnt2910.Browser.PostProcessing\Trungnt2910.Browser.PostProcessing.csproj" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
@@ -64,5 +69,7 @@
   <Target Name="AssemblyPostProcessing" AfterTargets="CopyFilesToOutputDirectory">
     <GeneratorCleanup AssemblyPath="$(OutputPath)\$(AssemblyName).dll" SnkPath="$(AssemblyOriginatorKeyFile)" />
   </Target>
+
+  <Import Project="..\Trungnt2910.Browser.Generators.TypeScript\Trungnt2910.Browser.Generators.TypeScript.props" />
 
 </Project>

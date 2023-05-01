@@ -20,7 +20,6 @@ namespace Trungnt2910.Browser.Dom;
 /// That said, even in a tabbed browser, some properties and methods still apply to the overall window that contains the tab, such as <see cref="ResizeTo(int, int)"/> and <see cref="InnerHeight"/>.
 /// Generally, anything that can't reasonably pertain to a tab pertains to the window instead.
 /// </remarks>
-[JsObject]
 public partial class Window: EventTarget
 {
     /// <summary>

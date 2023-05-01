@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "GeneratorsDebug": {
+      "commandName": "DebugRoslynComponent",
+      "targetProject": "..\\Trungnt2910.Browser\\Trungnt2910.Browser.csproj"
+    }
+  }
+}
