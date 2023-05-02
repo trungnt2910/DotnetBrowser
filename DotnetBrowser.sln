@@ -67,7 +67,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trungnt2910.Browser.Tests",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibDomTypeScriptParser", "src\LibDomTypeScriptParser\LibDomTypeScriptParser\LibDomTypeScriptParser.csproj", "{550EEED9-41B3-4217-8CFC-871841BAD573}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "azureams.github.io", "sample\azureams.github.io\azureams.github.io.csproj", "{4CAEF5B5-FA7D-4C7B-8091-95CFDD4136A0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "azureams.github.io", "sample\azureams.github.io\azureams.github.io.csproj", "{4CAEF5B5-FA7D-4C7B-8091-95CFDD4136A0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trungnt2910.Browser.Generators.TypeScript", "src\Trungnt2910.Browser.Generators.TypeScript\Trungnt2910.Browser.Generators.TypeScript.csproj", "{1E334AFE-61E0-4D81-8661-260596B0853E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -143,6 +145,10 @@ Global
 		{4CAEF5B5-FA7D-4C7B-8091-95CFDD4136A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4CAEF5B5-FA7D-4C7B-8091-95CFDD4136A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4CAEF5B5-FA7D-4C7B-8091-95CFDD4136A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E334AFE-61E0-4D81-8661-260596B0853E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E334AFE-61E0-4D81-8661-260596B0853E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E334AFE-61E0-4D81-8661-260596B0853E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E334AFE-61E0-4D81-8661-260596B0853E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -168,6 +174,7 @@ Global
 		{2EC5733C-073A-4689-8655-BBA8862B8312} = {6E729401-F6AC-4A4D-A6F6-B200590D82DB}
 		{550EEED9-41B3-4217-8CFC-871841BAD573} = {00AAA5AE-73A1-4626-AE26-96524BFBFC9C}
 		{4CAEF5B5-FA7D-4C7B-8091-95CFDD4136A0} = {050E2031-DA85-4DD5-AB76-A5D5F2BC4F56}
+		{1E334AFE-61E0-4D81-8661-260596B0853E} = {00AAA5AE-73A1-4626-AE26-96524BFBFC9C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C7E38642-D6A3-451F-929A-4CAF0423329C}
