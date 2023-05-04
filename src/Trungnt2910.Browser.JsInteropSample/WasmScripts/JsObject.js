@@ -66,7 +66,7 @@ var Trungnt2910;
             static GetMember(index, name) {
                 return JsObject.CreateHandle(JsObject.ReferencedObjects[index][name]);
             }
-            static InvokeMemberRaw(index, name, ...args) {
+            static MarshalArgs(args) {
                 const newArgs = [];
                 const isArgJsObjectHandle = [];
                 let i = 0;
@@ -99,10 +99,43 @@ var Trungnt2910;
                         newArgs.push(args[argIndex + i]);
                     }
                 }
-                return JsObject.ReferencedObjects[index][name].call(JsObject.ReferencedObjects[index], ...newArgs);
+                return newArgs;
             }
-            static InvokeMember(index, name, ...args) {
-                return JsObject.CreateHandle(JsObject.InvokeMemberRaw(index, name, ...args));
+            static InvokeMemberRaw(index, name, args) {
+                return JsObject.ReferencedObjects[index][name].call(JsObject.ReferencedObjects[index], ...JsObject.MarshalArgs(args));
+            }
+            static InvokeMember(index, name, args) {
+                return JsObject.CreateHandle(JsObject.InvokeMemberRaw(index, name, args));
+            }
+            static InvokeRaw(index, args) {
+                return JsObject.ReferencedObjects[index].call(JsObject.ReferencedObjects[index], ...JsObject.MarshalArgs(args));
+            }
+            static Invoke(index, args) {
+                return JsObject.CreateHandle(JsObject.InvokeRaw(index, args));
+            }
+            static GetType(index) {
+                return typeof JsObject.ReferencedObjects[index];
+            }
+            static ToString(index) {
+                let obj = JsObject.ReferencedObjects[index];
+                if (typeof obj == "string") {
+                    return obj;
+                }
+                else if (typeof obj.toString == "function") {
+                    return obj.toString();
+                }
+                else {
+                    return JSON.stringify(obj);
+                }
+            }
+            static ToStringRaw(index) {
+                return JsObject.ReferencedObjects[index];
+            }
+            static ToBoolean(index) {
+                return JsObject.ReferencedObjects[index] ? true : false;
+            }
+            static ToNumber(index) {
+                return JsObject.ReferencedObjects[index];
             }
             static SetupEventListener(index, type) {
                 let currentEventList = JsObject._objectsWithEvents.get(index);

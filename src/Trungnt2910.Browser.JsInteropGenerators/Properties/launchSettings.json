@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "JsInteropGenerators.Debug": {
+      "commandName": "DebugRoslynComponent",
+      "targetProject": "..\\Trungnt2910.Browser.JsInteropSample\\Trungnt2910.Browser.JsInteropSample.csproj"
+    }
+  }
+}

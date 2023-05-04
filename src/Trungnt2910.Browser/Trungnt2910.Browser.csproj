@@ -48,9 +48,9 @@
     <Folder Include="WasmScripts\" />
   </ItemGroup>
 
-  <ItemGroup>
+  <!--<ItemGroup>
     <AdditionalFiles Include="..\LibDomTypeScriptParser\LibDomTypeScriptParser\TypeScript\lib\lib.dom.d.ts" NamespaceName="Trungnt2910.Browser.Dom" GlobalInterfaceName="Window" />
-  </ItemGroup>
+  </ItemGroup>-->
 
   <ItemGroup>
     <EmbeddedResource Include="LinkerDefinition.xml">

@@ -1,0 +1,49 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Trungnt2910.Browser</RootNamespace>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.Versioning.SupportedOSPlatformAttribute">
+      <_Parameter1>browser</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.8.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="WasmScripts\*.js">
+      <LogicalName>$(RootNamespace).%(Filename).js</LogicalName>
+    </EmbeddedResource>
+    <UpToDateCheckInput Include="ts\**\*" />
+    <UpToDateCheckInput Include="tsBindings\**\*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="tsconfig.json" />
+    <Content Include="ts\**\*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="WasmScripts\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="../Trungnt2910.Browser/JsInterop/*.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Trungnt2910.Browser.JsInteropGenerators\Trungnt2910.Browser.JsInteropGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
+</Project>
